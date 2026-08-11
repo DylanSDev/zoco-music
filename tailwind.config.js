@@ -13,7 +13,7 @@ export default {
       },
       fontFamily: {
         sans: ["Inter", "sans-serif"],
-        heading: ["Montserrat", "sans-serif"],
+        heading: ["Montserrat", "'Noto Sans Arabic'", "sans-serif"],
       },
       boxShadow: {
         neon: "0 0 15px rgba(241, 255, 0, 0.35)",
