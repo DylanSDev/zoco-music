@@ -135,17 +135,19 @@
 }
 
 .brand-music {
-  font-size: 56px;
+  font-size: 72px;
   font-weight: 800;
   letter-spacing: 4px;
+  text-transform: uppercase;
   color: #f1ff00;
   text-shadow: 0 0 25px rgba(241, 255, 0, 0.45);
   margin-top: 6px;
 
   @media (max-width: 768px) {
-    font-size: 36px;
+    font-size: 48px;
     letter-spacing: 3px;
     margin-top: 2px;
+    text-align: start;
   }
 }
 
