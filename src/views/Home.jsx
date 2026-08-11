@@ -1,18 +1,12 @@
-import { useState } from "react";
-import { Sidebar } from "../components/layout/Sidebar";
-import { BottomPlayer } from "../components/layout/BottomPlayer";
 import { QuickMixCard } from "../components/home/QuickMixCard";
 import { MusicCard } from "../components/home/MusicCard";
 import { SongRow } from "../components/home/SongRow";
 import { VibeCard } from "../components/home/VibeCard";
-import { AmbientBackground } from "../components/layout/AmbientBackground";
-import { Navbar } from "../components/layout/Navbar";
 import { SectionHeader } from "../components/common/SectionHeader";
 import { FilterChips } from "../components/home/FilterChips";
+import { MainLayout } from "../components/layout/MainLayout";
 
 export function Home() {
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-
   const dailyMixImage = "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/daily-music-remix-spotify-album-cover-art-design-template-1ea8a797c35a4eafb323d9c3f7d08130_screen.jpg?ts=1602184061";
   const venngageImage = "https://cdn.venngage.com/template/thumbnail/small/bf008bfe-9bf6-4511-b795-e86f070bfff5.webp";
   const gstaticImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_KUyYdZviDH5CCB9qsTYsPZuxEsh1UIZP-nCeTVoNsPx0FR_elQd8obIO&s=10";
@@ -77,81 +71,68 @@ export function Home() {
   ];
 
   return (
-    <div className="relative flex min-h-screen bg-[#06131c] text-white overflow-hidden">
-      <AmbientBackground />
+    <MainLayout>
+      <h1 className="font-heading text-3xl font-black tracking-tight text-white md:text-4xl mb-4">
+        Buenas tardes
+      </h1>
 
-      <Sidebar
-        isExpanded={isSidebarExpanded}
-        onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
-      />
+      <FilterChips />
 
-      <div className="relative z-10 flex-1 h-screen overflow-y-auto pb-40 pt-6 px-4 md:pt-12 md:px-12 lg:px-16 2xl:px-24">
-        <Navbar />
-
-        <h1 className="font-heading text-3xl font-black tracking-tight text-white md:text-4xl mb-4">
-          Buenas tardes
-        </h1>
-
-        <FilterChips />
-
-        <main className="space-y-10">
-          <section>
-            <SectionHeader title="Tus Mixes" isNeon={true} />
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {quickMixes.map((mix, index) => (
-                <QuickMixCard key={index} title={mix.title} imageUrl={mix.imageUrl} />
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <SectionHeader title="Recomendados para ti" />
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {recommended.map((item, index) => (
-                <MusicCard key={index} title={item.title} subtitle={item.subtitle} imageUrl={item.imageUrl} />
-              ))}
-            </div>
-          </section>
-
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 items-stretch">
-            <section className="flex flex-col h-full">
-              <SectionHeader title="Nuevos Lanzamientos" />
-              <div className="flex flex-col justify-between flex-1 space-y-3">
-                {newReleases.map((song, index) => (
-                  <SongRow
-                    key={index}
-                    title={song.title}
-                    artist={song.artist}
-                    duration={song.duration}
-                    imageUrl={song.imageUrl}
-                    isFavoriteInitial={song.isFavorite}
-                  />
-                ))}
-              </div>
-            </section>
-
-            <section className="flex flex-col h-full">
-              <SectionHeader title="Explora tu Vibra" />
-              <div className="grid grid-cols-2 gap-4 flex-1">
-                {vibes.map((vibe, index) => (
-                  <VibeCard
-                    key={index}
-                    genre={vibe.genre}
-                    imageUrl={vibe.imageUrl}
-                    ambientGlowClass={vibe.ambientGlowClass}
-                    hoverTextColor={vibe.hoverTextColor}
-                    hoverBorderColor={vibe.hoverBorderColor}
-                    glowBlobColor={vibe.glowBlobColor}
-                  />
-                ))}
-              </div>
-            </section>
+      <main className="space-y-10">
+        <section>
+          <SectionHeader title="Tus Mixes" isNeon={true} />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {quickMixes.map((mix, index) => (
+              <QuickMixCard key={index} title={mix.title} imageUrl={mix.imageUrl} />
+            ))}
           </div>
-        </main>
-      </div>
+        </section>
 
-      <BottomPlayer isSidebarExpanded={isSidebarExpanded} />
-    </div>
+        <section>
+          <SectionHeader title="Recomendados para ti" />
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {recommended.map((item, index) => (
+              <MusicCard key={index} title={item.title} subtitle={item.subtitle} imageUrl={item.imageUrl} />
+            ))}
+          </div>
+        </section>
+
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 items-stretch">
+          <section className="flex flex-col h-full">
+            <SectionHeader title="Nuevos Lanzamientos" />
+            <div className="flex flex-col justify-between flex-1 space-y-3">
+              {newReleases.map((song, index) => (
+                <SongRow
+                  key={index}
+                  title={song.title}
+                  artist={song.artist}
+                  duration={song.duration}
+                  imageUrl={song.imageUrl}
+                  isFavoriteInitial={song.isFavorite}
+                />
+              ))}
+            </div>
+          </section>
+
+          <section className="flex flex-col h-full">
+            <SectionHeader title="Explora tu Vibra" />
+            <div className="grid grid-cols-2 gap-4 flex-1">
+              {vibes.map((vibe, index) => (
+                <VibeCard
+                  key={index}
+                  genre={vibe.genre}
+                  imageUrl={vibe.imageUrl}
+                  ambientGlowClass={vibe.ambientGlowClass}
+                  hoverTextColor={vibe.hoverTextColor}
+                  hoverBorderColor={vibe.hoverBorderColor}
+                  glowBlobColor={vibe.glowBlobColor}
+                />
+              ))}
+            </div>
+          </section>
+        </div>
+      </main>
+    </MainLayout>
   );
 }
 export default Home;
