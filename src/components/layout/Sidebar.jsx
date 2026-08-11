@@ -56,12 +56,12 @@ export function Sidebar() {
         <NavLink
           to="/home"
           className={({ isActive }) =>
-            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-r-xl rounded-l-lg ${
+            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-lg md:rounded-r-xl md:rounded-l-lg ${
               isExpanded ? "px-4 gap-4" : "justify-center"
             } ${
               isActive
-                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-l-[4px] border-[#F1FF00]"
-                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-l-[4px] border-transparent"
+                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-t-[4px] md:border-t-0 md:border-l-[4px] border-[#F1FF00]"
+                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-t-[4px] md:border-t-0 md:border-l-[4px] border-transparent"
             }`
           }
         >
@@ -79,12 +79,12 @@ export function Sidebar() {
         <NavLink
           to="/search"
           className={({ isActive }) =>
-            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-r-xl rounded-l-lg ${
+            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-lg md:rounded-r-xl md:rounded-l-lg ${
               isExpanded ? "px-4 gap-4" : "justify-center"
             } ${
               isActive
-                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-l-[4px] border-[#F1FF00]"
-                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-l-[4px] border-transparent"
+                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-t-[4px] md:border-t-0 md:border-l-[4px] border-[#F1FF00]"
+                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-t-[4px] md:border-t-0 md:border-l-[4px] border-transparent"
             }`
           }
         >
@@ -99,12 +99,12 @@ export function Sidebar() {
         <NavLink
           to="/library"
           className={({ isActive }) =>
-            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-r-xl rounded-l-lg ${
+            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-lg md:rounded-r-xl md:rounded-l-lg ${
               isExpanded ? "px-4 gap-4" : "justify-center"
             } ${
               isActive
-                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-l-[4px] border-[#F1FF00]"
-                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-l-[4px] border-transparent"
+                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-t-[4px] md:border-t-0 md:border-l-[4px] border-[#F1FF00]"
+                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-t-[4px] md:border-t-0 md:border-l-[4px] border-transparent"
             }`
           }
         >
@@ -122,12 +122,12 @@ export function Sidebar() {
         <NavLink
           to="/profile"
           className={({ isActive }) =>
-            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-r-xl rounded-l-lg ${
+            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-lg md:rounded-r-xl md:rounded-l-lg ${
               isExpanded ? "px-4 gap-4" : "justify-center"
             } ${
               isActive
-                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-l-[4px] border-[#F1FF00]"
-                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-l-[4px] border-transparent"
+                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-t-[4px] md:border-t-0 md:border-l-[4px] border-[#F1FF00]"
+                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-t-[4px] md:border-t-0 md:border-l-[4px] border-transparent"
             }`
           }
         >
