@@ -38,8 +38,38 @@ export function Home() {
   ];
 
   const vibes = [
-    { genre: "Electrónica", gradientClass: "from-blue-600 to-cyan-500" },
-    { genre: "Chillout", gradientClass: "from-green-500 to-teal-400" },
+    {
+      genre: "Electrónica",
+      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAdgYkydM00SzESHErJr5hM-tgFpnyibvJLyquwTF08VmENCdAU50xVxy9&s=10",
+      ambientGlowClass: "from-cyan-500/35 via-blue-950/40 to-transparent",
+      hoverTextColor: "group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]",
+      hoverBorderColor: "hover:border-cyan-400/50 hover:shadow-[0_0_25px_rgba(34,211,238,0.25)]",
+      glowBlobColor: "bg-cyan-400/20 group-hover:bg-cyan-400/40",
+    },
+    {
+      genre: "Chillout",
+      imageUrl: "https://escapadas.mexicodesconocido.com.mx/wp-content/uploads/2024/10/miguel-escudero-acapulco.jpg",
+      ambientGlowClass: "from-[#F1FF00]/30 via-teal-950/40 to-transparent",
+      hoverTextColor: "group-hover:text-[#F1FF00] group-hover:drop-shadow-[0_0_12px_rgba(241,255,0,0.8)]",
+      hoverBorderColor: "hover:border-[#F1FF00]/50 hover:shadow-[0_0_25px_rgba(241,255,0,0.25)]",
+      glowBlobColor: "bg-[#F1FF00]/20 group-hover:bg-[#F1FF00]/40",
+    },
+    {
+      genre: "Synthwave",
+      imageUrl: "https://i.blogs.es/f370df/24yvinp.jpg/1366_2000.png",
+      ambientGlowClass: "from-fuchsia-500/35 via-purple-950/40 to-transparent",
+      hoverTextColor: "group-hover:text-fuchsia-400 group-hover:drop-shadow-[0_0_12px_rgba(232,121,249,0.8)]",
+      hoverBorderColor: "hover:border-fuchsia-400/50 hover:shadow-[0_0_25px_rgba(232,121,249,0.25)]",
+      glowBlobColor: "bg-fuchsia-400/20 group-hover:bg-fuchsia-400/40",
+    },
+    {
+      genre: "Perreo",
+      imageUrl: "https://img.magnific.com/foto-gratis/amigos-tintinean-vasos-bebida-bar-moderno_1150-18971.jpg?semt=ais_test_b&w=740&q=80",
+      ambientGlowClass: "from-emerald-500/35 via-rose-950/40 to-transparent",
+      hoverTextColor: "group-hover:text-emerald-400 group-hover:drop-shadow-[0_0_12px_rgba(52,211,153,0.8)]",
+      hoverBorderColor: "hover:border-emerald-400/50 hover:shadow-[0_0_25px_rgba(52,211,153,0.25)]",
+      glowBlobColor: "bg-emerald-400/20 group-hover:bg-emerald-400/40",
+    },
   ];
 
   return (
@@ -74,10 +104,10 @@ export function Home() {
             </div>
           </section>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-            <section className="lg:col-span-7">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 items-stretch">
+            <section className="flex flex-col h-full">
               <SectionHeader title="Nuevos Lanzamientos" />
-              <div className="space-y-3">
+              <div className="flex flex-col justify-between flex-1 space-y-3">
                 {newReleases.map((song, index) => (
                   <SongRow
                     key={index}
@@ -91,11 +121,19 @@ export function Home() {
               </div>
             </section>
 
-            <section className="lg:col-span-5">
+            <section className="flex flex-col h-full">
               <SectionHeader title="Explora tu Vibra" />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4 flex-1">
                 {vibes.map((vibe, index) => (
-                  <VibeCard key={index} genre={vibe.genre} gradientClass={vibe.gradientClass} />
+                  <VibeCard
+                    key={index}
+                    genre={vibe.genre}
+                    imageUrl={vibe.imageUrl}
+                    ambientGlowClass={vibe.ambientGlowClass}
+                    hoverTextColor={vibe.hoverTextColor}
+                    hoverBorderColor={vibe.hoverBorderColor}
+                    glowBlobColor={vibe.glowBlobColor}
+                  />
                 ))}
               </div>
             </section>
