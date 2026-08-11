@@ -8,7 +8,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`fixed bottom-0 left-0 right-0 z-40 flex h-16 flex-row items-center justify-around border-t border-[rgba(241,255,0,0.15)] bg-[#0F2A3B]/80 px-4 backdrop-blur-lg transition-all duration-300 ease-in-out md:relative md:bottom-auto md:top-0 md:h-screen md:flex-col md:justify-start md:border-r md:border-t-0 md:py-8 md:px-3 ${
+      className={`fixed bottom-0 left-0 right-0 z-40 flex h-16 flex-row items-center justify-around border-t border-[rgba(241,255,0,0.15)] bg-[#0F2A3B] px-4 transition-all duration-300 ease-in-out md:relative md:bottom-auto md:top-0 md:h-screen md:flex-col md:justify-start md:border-r md:border-t-0 md:py-8 md:px-3 ${
         isExpanded ? "md:w-60" : "md:w-20"
       }`}
     >
