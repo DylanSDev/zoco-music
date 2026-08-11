@@ -2,7 +2,7 @@ import { Play } from "lucide-react";
 
 export function MusicCard({ title, subtitle, imageUrl }) {
   return (
-    <div className="group relative rounded-2xl border border-white/5 bg-[#0F2A3B]/20 p-4 transition-all duration-300 hover:bg-[#0F2A3B]/50 hover:shadow-lg backdrop-blur-md">
+    <div className="group relative rounded-2xl border border-white/5 bg-black/20 p-4 transition-all duration-300 hover:bg-black/40 hover:shadow-lg backdrop-blur-md">
       <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-white/5 mb-4">
         <img
           src={imageUrl}

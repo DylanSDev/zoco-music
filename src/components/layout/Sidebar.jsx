@@ -10,8 +10,17 @@ import {
 } from "lucide-react";
 import logo from "../../assets/ZocoMusic-Icono_Neón-FondoTransparente.png";
 
-export function Sidebar() {
-  const [isExpanded, setIsExpanded] = useState(false);
+export function Sidebar({ isExpanded: externalExpanded, onToggleExpand }) {
+  const [internalExpanded, setInternalExpanded] = useState(false);
+  const isExpanded = externalExpanded !== undefined ? externalExpanded : internalExpanded;
+
+  const handleToggle = () => {
+    if (onToggleExpand) {
+      onToggleExpand();
+    } else {
+      setInternalExpanded(!internalExpanded);
+    }
+  };
 
   return (
     <aside
@@ -20,7 +29,7 @@ export function Sidebar() {
       }`}
     >
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={handleToggle}
         className="absolute -right-3 top-14 z-50 hidden h-6 w-6 items-center justify-center rounded-full border border-[#F1FF00]/30 bg-[#0F2A3B] text-[#9bb2c4] shadow-neon transition-all hover:border-[#F1FF00] hover:text-[#F1FF00] md:flex"
       >
         {isExpanded ? (
