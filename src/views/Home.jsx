@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Sidebar } from "../components/layout/Sidebar";
 import { BottomPlayer } from "../components/layout/BottomPlayer";
 import { QuickMixCard } from "../components/home/QuickMixCard";
@@ -7,8 +8,11 @@ import { VibeCard } from "../components/home/VibeCard";
 import { AmbientBackground } from "../components/layout/AmbientBackground";
 import { Navbar } from "../components/layout/Navbar";
 import { SectionHeader } from "../components/common/SectionHeader";
+import { FilterChips } from "../components/home/FilterChips";
 
 export function Home() {
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+
   const dailyMixImage = "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/daily-music-remix-spotify-album-cover-art-design-template-1ea8a797c35a4eafb323d9c3f7d08130_screen.jpg?ts=1602184061";
   const venngageImage = "https://cdn.venngage.com/template/thumbnail/small/bf008bfe-9bf6-4511-b795-e86f070bfff5.webp";
   const gstaticImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_KUyYdZviDH5CCB9qsTYsPZuxEsh1UIZP-nCeTVoNsPx0FR_elQd8obIO&s=10";
@@ -76,14 +80,19 @@ export function Home() {
     <div className="relative flex min-h-screen bg-[#06131c] text-white overflow-hidden">
       <AmbientBackground />
 
-      <Sidebar />
+      <Sidebar
+        isExpanded={isSidebarExpanded}
+        onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
+      />
 
       <div className="relative z-10 flex-1 h-screen overflow-y-auto pb-40 pt-6 px-4 md:pt-12 md:px-12 lg:px-16 2xl:px-24">
         <Navbar />
 
-        <h1 className="font-heading text-3xl font-black tracking-tight text-white md:text-4xl mb-3">
+        <h1 className="font-heading text-3xl font-black tracking-tight text-white md:text-4xl mb-4">
           Buenas tardes
         </h1>
+
+        <FilterChips />
 
         <main className="space-y-10">
           <section>
@@ -141,7 +150,7 @@ export function Home() {
         </main>
       </div>
 
-      <BottomPlayer />
+      <BottomPlayer isSidebarExpanded={isSidebarExpanded} />
     </div>
   );
 }
