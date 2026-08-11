@@ -5,7 +5,7 @@ import { MusicCard } from "../components/home/MusicCard";
 import { SongRow } from "../components/home/SongRow";
 import { VibeCard } from "../components/home/VibeCard";
 import { AmbientBackground } from "../components/layout/AmbientBackground";
-import { Bell } from "lucide-react";
+import { Navbar } from "../components/layout/Navbar";
 
 export function Home() {
   const quickMixes = [
@@ -43,24 +43,12 @@ export function Home() {
 
       <Sidebar />
 
-      <div className="flex-1 h-screen overflow-y-auto pb-40 pt-6 px-4 md:pt-8 md:pr-8 md:pl-8">
-        <header className="flex items-center justify-between mb-8 pl-4 md:pl-0">
-          <h1 className="font-heading text-3xl font-black tracking-tight text-white md:text-4xl">
-            Buenas tardes
-          </h1>
-          <div className="flex items-center gap-4">
-            <button className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-[#0F2A3B]/40 text-[#9bb2c4] backdrop-blur-md transition-colors hover:text-[#F1FF00]">
-              <Bell className="h-5 w-5" />
-            </button>
-            <div className="h-10 w-10 overflow-hidden rounded-full border border-[#F1FF00]/30 shadow-neon">
-              <img
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=60"
-                alt="Profile"
-                className="h-full w-full object-cover"
-              />
-            </div>
-          </div>
-        </header>
+      <div className="flex-1 h-screen overflow-y-auto pb-40 pt-6 px-4 md:pt-12 md:px-12 lg:px-16 2xl:px-24">
+        <Navbar />
+
+        <h1 className="font-heading text-3xl font-black tracking-tight text-white md:text-4xl mb-8">
+          Buenas tardes
+        </h1>
 
         <main className="space-y-12">
           <section>
