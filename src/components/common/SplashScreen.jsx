@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Volume2, VolumeX, Sparkles } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { ConstructionModal } from './ConstructionModal'
-import { AmbientBackground } from './AmbientBackground'
+import { AmbientBackground } from '../layout/AmbientBackground'
 
 export function SplashScreen() {
+  const navigate = useNavigate()
   const [showSplash, setShowSplash] = useState(() => {
     return !localStorage.getItem('zoco_music_visited')
   })
@@ -18,8 +20,10 @@ export function SplashScreen() {
         setShowSplash(false)
       }, 10000)
       return () => clearTimeout(splashTimer)
+    } else {
+      navigate('/home')
     }
-  }, [showSplash])
+  }, [showSplash, navigate])
 
   useEffect(() => {
     const miniTimer = setTimeout(() => {
