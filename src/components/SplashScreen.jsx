@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Volume2, VolumeX, Sparkles } from 'lucide-react'
 import { ConstructionModal } from './ConstructionModal'
+import { AmbientBackground } from './AmbientBackground'
 
 export function SplashScreen() {
   const [showSplash, setShowSplash] = useState(() => {
@@ -38,6 +39,7 @@ export function SplashScreen() {
 
   return (
     <>
+      <AmbientBackground />
       {showSplash && (
         <button
           className="sound-toggle-btn"
