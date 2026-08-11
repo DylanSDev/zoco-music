@@ -1,11 +1,20 @@
 import { useState } from "react";
 import { Heart, Play } from "lucide-react";
+import { usePlayerStore } from "../../store/usePlayerStore";
 
 export function SongRow({ title, artist, duration, imageUrl, isFavoriteInitial = false }) {
   const [isFavorite, setIsFavorite] = useState(isFavoriteInitial);
+  const { playSong } = usePlayerStore();
+
+  const handlePlay = () => {
+    playSong({ title, artist, duration, imageUrl });
+  };
 
   return (
-    <div className="group flex items-center justify-between rounded-xl border border-white/5 bg-[#0F2A3B]/10 p-3 transition-all duration-200 hover:bg-[#0F2A3B]/40">
+    <div 
+      className="group flex items-center justify-between rounded-xl border border-white/5 bg-[#0F2A3B]/10 p-3 transition-all duration-200 hover:bg-[#0F2A3B]/40 cursor-pointer"
+      onClick={handlePlay}
+    >
       <div className="flex items-center gap-3 min-w-0">
         <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg border border-white/5">
           <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
@@ -22,7 +31,10 @@ export function SongRow({ title, artist, duration, imageUrl, isFavoriteInitial =
       <div className="flex items-center gap-4">
         <span className="font-sans text-xs text-[#9bb2c4]">{duration}</span>
         <button
-          onClick={() => setIsFavorite(!isFavorite)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsFavorite(!isFavorite);
+          }}
           className={`transition-colors duration-200 hover:text-white ${
             isFavorite ? "text-[#F1FF00]" : "text-[#9bb2c4]"
           }`}

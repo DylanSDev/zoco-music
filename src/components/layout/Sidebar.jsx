@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import {
   Home,
   Search,
@@ -39,8 +39,9 @@ export function Sidebar({ isExpanded: externalExpanded, onToggleExpand }) {
         )}
       </button>
 
-      <div
-        className={`hidden w-full items-center md:mb-10 md:flex ${isExpanded ? "justify-start px-4 gap-4" : "justify-center"}`}
+      <Link
+        to="/home"
+        className={`hidden w-full items-center md:mb-10 md:flex hover:opacity-80 transition-opacity ${isExpanded ? "justify-start px-4 gap-4" : "justify-center"}`}
       >
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
           <img
@@ -59,7 +60,7 @@ export function Sidebar({ isExpanded: externalExpanded, onToggleExpand }) {
             </span>
           </div>
         )}
-      </div>
+      </Link>
 
       <nav className="flex w-full flex-row justify-around gap-2 md:flex-col md:items-stretch md:gap-4">
         <NavLink
