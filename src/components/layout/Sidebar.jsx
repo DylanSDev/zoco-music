@@ -12,21 +12,22 @@ export function Sidebar() {
         isExpanded ? "md:w-60" : "md:w-20"
       }`}
     >
-      <div className="hidden w-full items-center justify-between px-3 md:flex md:mb-8">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="absolute -right-3 top-9 z-50 hidden h-6 w-6 items-center justify-center rounded-full border border-[#F1FF00]/30 bg-[#0F2A3B] text-[#9bb2c4] shadow-neon transition-all hover:border-[#F1FF00] hover:text-[#F1FF00] md:flex"
+      >
+        {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+      </button>
+
+      <div className={`hidden w-full items-center md:mb-10 md:flex ${isExpanded ? "justify-start px-2 gap-3" : "justify-center"}`}>
         <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
           <img src={logo} alt="Zoco Music" className="h-full w-full object-contain drop-shadow-[0_0_8px_rgba(241,255,0,0.5)]" />
         </div>
         {isExpanded && (
-          <span className="font-heading text-lg font-extrabold tracking-wider text-white animate-[fadeIn_0.2s_ease-out]">
+          <span className="animate-[fadeIn_0.2s_ease-out] font-heading text-xl font-extrabold tracking-wider text-white">
             ZOCO
           </span>
         )}
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="hidden h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-[#0F2A3B]/60 text-[#9bb2c4] transition-all hover:border-[#F1FF00]/40 hover:text-[#F1FF00] md:flex"
-        >
-          {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-        </button>
       </div>
 
       <nav className="flex w-full flex-row justify-around gap-2 md:flex-col md:items-stretch md:gap-4">
@@ -42,7 +43,7 @@ export function Sidebar() {
             }`
           }
         >
-          <Home className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
+          <Home className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" fill="currentColor" />
           {isExpanded && (
             <span className="font-sans text-sm font-semibold truncate animate-[fadeIn_0.2s_ease-out]">
               Inicio
@@ -62,7 +63,7 @@ export function Sidebar() {
             }`
           }
         >
-          <Search className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
+          <Search className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" fill="currentColor" />
           {isExpanded && (
             <span className="font-sans text-sm font-semibold truncate animate-[fadeIn_0.2s_ease-out]">
               Buscar
@@ -82,7 +83,7 @@ export function Sidebar() {
             }`
           }
         >
-          <Library className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
+          <Library className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" fill="currentColor" />
           {isExpanded && (
             <span className="font-sans text-sm font-semibold truncate animate-[fadeIn_0.2s_ease-out]">
               Biblioteca
@@ -102,7 +103,7 @@ export function Sidebar() {
             }`
           }
         >
-          <User className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" />
+          <User className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110" fill="currentColor" />
           {isExpanded && (
             <span className="font-sans text-sm font-semibold truncate animate-[fadeIn_0.2s_ease-out]">
               Perfil
