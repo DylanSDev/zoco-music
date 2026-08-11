@@ -27,7 +27,7 @@ export function Search() {
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 items-stretch">
-        <section className="flex flex-col h-full w-full col-span-1">
+        <section className="flex flex-col h-full w-full col-span-1 animate-[fadeIn_0.4s_ease-out_both]">
           <SectionHeader title="Artista" />
           <div className="flex-1 w-full flex">
             <TopResultCard 
@@ -39,7 +39,7 @@ export function Search() {
           </div>
         </section>
         
-        <section className="flex flex-col h-full w-full col-span-1">
+        <section className="flex flex-col h-full w-full col-span-1 animate-[fadeIn_0.5s_ease-out_0.1s_both]">
           <SectionHeader title="Álbum" />
           <div className="flex-1 w-full flex">
             <TopResultCard 
@@ -52,18 +52,23 @@ export function Search() {
           </div>
         </section>
 
-        <section className="flex flex-col w-full col-span-2">
+        <section className="flex flex-col w-full col-span-2 animate-[fadeIn_0.6s_ease-out_0.2s_both]">
           <SectionHeader title="Canciones" />
           <div className="flex flex-col gap-2 w-full">
             {songs.map((song, index) => (
-              <SongRow
-                key={index}
-                title={song.title}
-                artist={song.artist}
-                duration={song.duration}
-                imageUrl={song.imageUrl}
-                isFavoriteInitial={song.isFavorite}
-              />
+              <div 
+                key={index} 
+                className="animate-[fadeIn_0.4s_ease-out_both]"
+                style={{ animationDelay: `${0.3 + index * 0.1}s` }}
+              >
+                <SongRow
+                  title={song.title}
+                  artist={song.artist}
+                  duration={song.duration}
+                  imageUrl={song.imageUrl}
+                  isFavoriteInitial={song.isFavorite}
+                />
+              </div>
             ))}
           </div>
         </section>

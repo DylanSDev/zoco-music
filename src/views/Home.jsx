@@ -70,16 +70,25 @@ export function Home() {
     },
   ];
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return "Buenos días";
+    if (hour >= 12 && hour < 20) return "Buenas tardes";
+    return "Buenas noches";
+  };
+
   return (
     <MainLayout>
-      <h1 className="font-heading text-3xl font-black tracking-tight text-white md:text-4xl mb-4">
-        Buenas tardes
+      <h1 className="font-heading text-3xl font-black tracking-tight text-white md:text-4xl mb-4 animate-[fadeIn_0.4s_ease-out_both]">
+        {getGreeting()}
       </h1>
 
-      <FilterChips />
+      <div className="animate-[fadeIn_0.4s_ease-out_both]">
+        <FilterChips />
+      </div>
 
       <main className="space-y-10">
-        <section>
+        <section className="animate-[fadeIn_0.5s_ease-out_0.1s_both]">
           <SectionHeader title="Tus Mixes" isNeon={true} />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {quickMixes.map((mix, index) => (
@@ -88,7 +97,7 @@ export function Home() {
           </div>
         </section>
 
-        <section>
+        <section className="animate-[fadeIn_0.6s_ease-out_0.2s_both]">
           <SectionHeader title="Recomendados para ti" />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {recommended.map((item, index) => (
@@ -97,7 +106,7 @@ export function Home() {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 items-stretch">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 items-stretch animate-[fadeIn_0.7s_ease-out_0.3s_both]">
           <section className="flex flex-col h-full">
             <SectionHeader title="Nuevos Lanzamientos" />
             <div className="flex flex-col justify-between flex-1 space-y-3">
