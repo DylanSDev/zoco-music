@@ -1,9 +1,9 @@
 import { Play, Pause } from "lucide-react";
 import { usePlayerStore } from "../../store/usePlayerStore";
 
-export function RecentHistoryCard({ title, subtitle, image, duration }) {
+export function RecentHistoryCard({ id, title, subtitle, image, duration, previewUrl, spotifyUri }) {
   const { currentSong, isPlaying, playSong, togglePlay, setIsExpanded } = usePlayerStore();
-  const isCurrentTrack = currentSong?.title === title;
+  const isCurrentTrack = currentSong?.id === id;
 
   const handlePlayTrack = (e) => {
     e.stopPropagation();
@@ -11,10 +11,13 @@ export function RecentHistoryCard({ title, subtitle, image, duration }) {
       togglePlay();
     } else {
       playSong({
+        id,
         title,
         artist: subtitle,
         imageUrl: image,
-        duration: duration || "3:45"
+        duration: duration || "3:45",
+        previewUrl: previewUrl || null,
+        spotifyUri: spotifyUri || null
       });
     }
     if (window.innerWidth < 768) {

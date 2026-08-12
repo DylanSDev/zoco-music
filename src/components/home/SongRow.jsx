@@ -1,20 +1,26 @@
-import { useState } from "react";
 import { Heart, Play, Pause } from "lucide-react";
 import { usePlayerStore } from "../../store/usePlayerStore";
 
-export function SongRow({ title, artist, duration, imageUrl, previewUrl, spotifyUri, isFavoriteInitial = false }) {
-  const [isFavorite, setIsFavorite] = useState(isFavoriteInitial);
-  const { currentSong, isPlaying, playSong, togglePlay, setIsExpanded } = usePlayerStore();
-  const isCurrentTrack = currentSong?.title === title;
+export function SongRow({ id, title, artist, duration, imageUrl, previewUrl, spotifyUri, queue }) {
+  const { currentSong, isPlaying, playSong, togglePlay, setIsExpanded, addFavorite, removeFavorite, isFavorite } = usePlayerStore();
+  const isCurrentTrack = currentSong?.id === id;
+  const liked = isFavorite(id);
 
   const handlePlay = () => {
     if (isCurrentTrack) {
       togglePlay();
     } else {
-      playSong({ title, artist, duration, imageUrl, previewUrl, spotifyUri });
+      playSong({ id, title, artist, duration, imageUrl, previewUrl, spotifyUri }, queue ?? null);
     }
-    if (window.innerWidth < 768) {
-      setIsExpanded(true);
+    if (window.innerWidth < 768) setIsExpanded(true);
+  };
+
+  const handleToggleFavorite = (e) => {
+    e.stopPropagation();
+    if (liked) {
+      removeFavorite(id);
+    } else {
+      addFavorite({ id, title, artist, duration, imageUrl, previewUrl, spotifyUri });
     }
   };
 
@@ -53,15 +59,12 @@ export function SongRow({ title, artist, duration, imageUrl, previewUrl, spotify
       <div className="flex items-center gap-4">
         <span className="font-sans text-xs text-[#9bb2c4]">{duration}</span>
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsFavorite(!isFavorite);
-          }}
+          onClick={handleToggleFavorite}
           className={`transition-colors duration-200 hover:text-white ${
-            isFavorite ? "text-[#F1FF00]" : "text-[#9bb2c4]"
+            liked ? "text-[#F1FF00]" : "text-[#9bb2c4]"
           }`}
         >
-          <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+          <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
         </button>
       </div>
     </div>

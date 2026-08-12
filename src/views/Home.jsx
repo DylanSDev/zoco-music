@@ -6,8 +6,9 @@ import { VibeCard } from "../components/home/VibeCard";
 import { SectionHeader } from "../components/common/SectionHeader";
 import { FilterChips } from "../components/home/FilterChips";
 import { MainLayout } from "../components/layout/MainLayout";
-import { searchSpotifyTracks, searchSpotifyPlaylists } from "../services/spotifyApi";
+import { searchSpotifyTracks, getFeaturedPlaylists } from "../services/spotifyApi";
 import { useSpotifyStore } from "../store/useSpotifyStore";
+import { LoginModal } from "../components/auth/LoginModal";
 
 export function Home() {
   const isAuthenticated = useSpotifyStore((s) => s.isAuthenticated);
@@ -18,8 +19,7 @@ export function Home() {
   const [activeVibe, setActiveVibe] = useState(null);
   const [activeChip, setActiveChip] = useState("Todos");
   const [isLoading, setIsLoading] = useState(true);
-
-
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const vibes = [
     {
@@ -59,19 +59,18 @@ export function Home() {
   useEffect(() => {
     let isMounted = true;
 
-    async function loadSpotifyHomeData() {
+    async function loadHomeData() {
       setIsLoading(true);
       try {
-        const [mixData, recData, newRelData] = await Promise.all([
-          searchSpotifyPlaylists("Mix", 6),
-          searchSpotifyTracks("Top Hits", 4),
-          searchSpotifyTracks("Pop Rock", 5)
+        const [mixData, recData, relData] = await Promise.all([
+          getFeaturedPlaylists(6),
+          searchSpotifyTracks("Top Hits 2024", 4),
+          searchSpotifyTracks("new releases 2025", 5)
         ]);
-
         if (isMounted) {
           setQuickMixes(mixData);
           setRecommended(recData);
-          setNewReleases(newRelData);
+          setNewReleases(relData);
         }
       } catch (err) {
         console.error(err);
@@ -80,11 +79,8 @@ export function Home() {
       }
     }
 
-    loadSpotifyHomeData();
-
-    return () => {
-      isMounted = false;
-    };
+    loadHomeData();
+    return () => { isMounted = false; };
   }, []);
 
   const handleVibeClick = async (genre) => {
@@ -93,12 +89,9 @@ export function Home() {
       setVibeTracks([]);
       return;
     }
-
     setActiveVibe(genre);
-    setIsLoading(true);
     const tracks = await searchSpotifyTracks(genre, 8);
     setVibeTracks(tracks);
-    setIsLoading(false);
   };
 
   const handleChipSelect = async (chip) => {
@@ -108,12 +101,9 @@ export function Home() {
       setVibeTracks([]);
       return;
     }
-
-    setIsLoading(true);
     const tracks = await searchSpotifyTracks(chip, 8);
     setVibeTracks(tracks);
     setActiveVibe(chip);
-    setIsLoading(false);
   };
 
   const getGreeting = () => {
@@ -136,48 +126,32 @@ export function Home() {
       <main className="space-y-10">
         <section className="animate-[fadeIn_0.5s_ease-out_0.1s_both]">
           <SectionHeader title={isAuthenticated ? "Tus Mixes" : "Mixes"} isNeon={true} />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {quickMixes.map((mix, index) => (
-              <QuickMixCard
-                key={mix.id || index}
-                title={mix.title}
-                imageUrl={mix.imageUrl}
-                id={mix.id || mix.title.toLowerCase().replace(/\s+/g, "-")}
-                typeRoute="mix"
-              />
-            ))}
-          </div>
-        </section>
-
-        {activeVibe && (
-          <section className="animate-[fadeIn_0.5s_ease-out_both] p-5 rounded-2xl border border-[#F1FF00]/30 bg-[#0F2A3B]/60 backdrop-blur-xl">
-            <div className="flex items-center justify-between mb-4">
-              <SectionHeader title={`Canciones de Vibra: ${activeVibe}`} isNeon={true} />
+          {!isLoading && quickMixes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-4 py-12 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-md">
+              <p className="text-white/50 text-sm font-sans text-center max-w-xs">
+                Inicia sesión con Spotify para acceder a tus mixes personalizados.
+              </p>
               <button
-                onClick={() => {
-                  setActiveVibe(null);
-                  setVibeTracks([]);
-                }}
-                className="text-xs text-[#F1FF00] hover:underline"
+                onClick={() => setIsLoginOpen(true)}
+                className="px-6 py-2.5 rounded-xl bg-[#F1FF00] text-[#0F2A3B] text-sm font-semibold font-sans hover:bg-[#F1FF00]/90 transition-all shadow-[0_0_16px_rgba(241,255,0,0.25)]"
               >
-                Limpiar filtro
+                Conectar Spotify
               </button>
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {vibeTracks.map((song, index) => (
-                <SongRow
-                  key={song.id || index}
-                  title={song.title}
-                  artist={song.artist}
-                  duration={song.duration}
-                  imageUrl={song.imageUrl}
-                  previewUrl={song.previewUrl}
-                  spotifyUri={song.spotifyUri}
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {quickMixes.map((mix, index) => (
+                <QuickMixCard
+                  key={mix.id || index}
+                  title={mix.title}
+                  imageUrl={mix.imageUrl}
+                  id={mix.id || mix.title.toLowerCase().replace(/\s+/g, "-")}
+                  typeRoute="mix"
                 />
               ))}
             </div>
-          </section>
-        )}
+          )}
+        </section>
 
         <section className="animate-[fadeIn_0.6s_ease-out_0.2s_both]">
           <SectionHeader title="Recomendados para ti" />
@@ -185,6 +159,7 @@ export function Home() {
             {recommended.map((item, index) => (
               <MusicCard
                 key={item.id || index}
+                id={item.id}
                 title={item.title}
                 subtitle={item.artist || item.subtitle}
                 imageUrl={item.imageUrl}
@@ -203,6 +178,7 @@ export function Home() {
               {newReleases.map((song, index) => (
                 <SongRow
                   key={song.id || index}
+                  id={song.id}
                   title={song.title}
                   artist={song.artist}
                   duration={song.duration}
@@ -233,7 +209,41 @@ export function Home() {
             </div>
           </section>
         </div>
+
+        {activeVibe && (
+          <section className="animate-[fadeIn_0.5s_ease-out_both] p-5 rounded-2xl border border-[#F1FF00]/30 bg-[#0F2A3B]/60 backdrop-blur-xl">
+            <div className="flex items-center justify-between mb-4">
+              <SectionHeader title={`Vibra: ${activeVibe}`} isNeon={true} />
+              <button
+                onClick={() => { setActiveVibe(null); setVibeTracks([]); }}
+                className="text-xs text-[#F1FF00] hover:underline"
+              >
+                Limpiar filtro
+              </button>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {vibeTracks.map((song, index) => (
+                <SongRow
+                  key={song.id || index}
+                  id={song.id}
+                  title={song.title}
+                  artist={song.artist}
+                  duration={song.duration}
+                  imageUrl={song.imageUrl}
+                  previewUrl={song.previewUrl}
+                  spotifyUri={song.spotifyUri}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </main>
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onSpotifyLogin={() => setIsLoginOpen(false)}
+      />
     </MainLayout>
   );
 }

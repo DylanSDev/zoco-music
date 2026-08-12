@@ -21,6 +21,8 @@ function saveToStorage(key, value) {
 
 export const usePlayerStore = create((set, get) => ({
   currentSong: null,
+  queue: [],
+  queueIndex: -1,
   isPlaying: false,
   isExpanded: false,
   currentTime: 0,
@@ -33,12 +35,52 @@ export const usePlayerStore = create((set, get) => ({
   favorites: loadFromStorage(LS_FAVORITES, []),
   history: loadFromStorage(LS_HISTORY, []),
 
-  playSong: (song) => {
+  playSong: (song, queue = null) => {
     const { history } = get();
     const filtered = history.filter((h) => h.id !== song.id);
     const newHistory = [song, ...filtered].slice(0, HISTORY_MAX);
     saveToStorage(LS_HISTORY, newHistory);
-    set({ currentSong: song, isPlaying: true, currentTime: 0, seekTime: 0, history: newHistory });
+
+    const newQueue = queue ?? (get().queue.length > 0 ? get().queue : [song]);
+    const newIndex = newQueue.findIndex((s) => s.id === song.id);
+
+    set({
+      currentSong: song,
+      queue: newQueue,
+      queueIndex: newIndex >= 0 ? newIndex : 0,
+      isPlaying: true,
+      currentTime: 0,
+      seekTime: 0,
+      history: newHistory
+    });
+  },
+
+  playNext: () => {
+    const { queue, queueIndex } = get();
+    if (queue.length === 0) return;
+    const nextIndex = queueIndex + 1 < queue.length ? queueIndex + 1 : 0;
+    const nextSong = queue[nextIndex];
+    const { history } = get();
+    const filtered = history.filter((h) => h.id !== nextSong.id);
+    const newHistory = [nextSong, ...filtered].slice(0, HISTORY_MAX);
+    saveToStorage(LS_HISTORY, newHistory);
+    set({ currentSong: nextSong, queueIndex: nextIndex, isPlaying: true, currentTime: 0, seekTime: 0, history: newHistory });
+  },
+
+  playPrev: () => {
+    const { queue, queueIndex, currentTime } = get();
+    if (queue.length === 0) return;
+    if (currentTime > 3) {
+      set({ currentTime: 0, seekTime: 0 });
+      return;
+    }
+    const prevIndex = queueIndex - 1 >= 0 ? queueIndex - 1 : queue.length - 1;
+    const prevSong = queue[prevIndex];
+    set({ currentSong: prevSong, queueIndex: prevIndex, isPlaying: true, currentTime: 0, seekTime: 0 });
+  },
+
+  setQueue: (songs) => {
+    set({ queue: songs });
   },
 
   togglePlay: () => set((state) => ({ isPlaying: !state.isPlaying })),

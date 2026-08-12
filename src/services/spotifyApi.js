@@ -79,6 +79,50 @@ export async function searchSpotifyTracks(query, limit = 20) {
   return (data?.tracks?.items ?? []).map(mapTrack);
 }
 
+export async function getFeaturedPlaylists(limit = 6) {
+  const data = await spotifyFetch(
+    `/browse/featured-playlists?${new URLSearchParams({ limit: limit.toString(), country: "US" })}`
+  );
+  return (data?.playlists?.items ?? []).map((pl) => ({
+    id: pl.id,
+    title: pl.name,
+    subtitle: pl.description || "Spotify Mix",
+    imageUrl: pl.images?.[0]?.url ?? "",
+    spotifyUri: pl.uri
+  }));
+}
+
+export async function getNewReleases(limit = 5) {
+  const albumsData = await spotifyFetch(
+    `/browse/new-releases?${new URLSearchParams({ limit: limit.toString(), country: "US" })}`
+  );
+  const albums = albumsData?.albums?.items ?? [];
+  if (albums.length === 0) return [];
+
+  const trackResults = await Promise.all(
+    albums.map((al) =>
+      spotifyFetch(`/albums/${al.id}/tracks?limit=1&market=US`).then((res) => {
+        const track = res?.items?.[0];
+        if (!track) return null;
+        return {
+          id: track.id,
+          title: al.name,
+          artist: al.artists?.map((a) => a.name).join(", ") ?? "",
+          imageUrl: al.images?.[0]?.url ?? "",
+          duration: formatDuration(track.duration_ms),
+          previewUrl: track.preview_url ?? null,
+          spotifyUri: track.uri,
+          albumId: al.id
+        };
+      }).catch(() => null)
+    )
+  );
+
+  return trackResults.filter(Boolean);
+}
+
+
+
 export async function searchSpotifyArtists(query, limit = 6) {
   if (!query?.trim()) return [];
   const data = await spotifyFetch(

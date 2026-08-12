@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import {
   Home,
   Search,
@@ -9,10 +9,15 @@ import {
   ChevronLeft,
 } from "lucide-react";
 import logo from "../../assets/ZocoMusic-Icono_Neón-FondoTransparente.png";
+import { LoginModal } from "../auth/LoginModal";
+import { useSpotifyStore } from "../../store/useSpotifyStore";
 
 export function Sidebar({ isExpanded: externalExpanded, onToggleExpand }) {
   const [internalExpanded, setInternalExpanded] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const isExpanded = externalExpanded !== undefined ? externalExpanded : internalExpanded;
+  const navigate = useNavigate();
+  const isAuthenticated = useSpotifyStore((s) => s.isAuthenticated);
 
   const handleToggle = () => {
     if (onToggleExpand) {
@@ -129,17 +134,14 @@ export function Sidebar({ isExpanded: externalExpanded, onToggleExpand }) {
           )}
         </NavLink>
 
-        <NavLink
-          to="/profile"
-          className={({ isActive }) =>
-            `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-lg md:rounded-r-xl md:rounded-l-lg ${
-              isExpanded ? "px-4 gap-4" : "justify-center"
-            } ${
-              isActive
-                ? "bg-[#F1FF00]/10 text-[#F1FF00] border-t-[4px] md:border-t-0 md:border-l-[4px] border-[#F1FF00]"
-                : "text-[#9bb2c4] hover:bg-white/5 hover:text-white border-t-[4px] md:border-t-0 md:border-l-[4px] border-transparent"
-            }`
-          }
+        <button
+          onClick={() => {
+            if (isAuthenticated) navigate("/profile");
+            else setIsLoginOpen(true);
+          }}
+          className={`group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-lg md:rounded-r-xl md:rounded-l-lg ${
+            isExpanded ? "px-4 gap-4" : "justify-center"
+          } text-[#9bb2c4] hover:bg-white/5 hover:text-white border-t-[4px] md:border-t-0 md:border-l-[4px] border-transparent`}
         >
           <User
             className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
@@ -150,8 +152,14 @@ export function Sidebar({ isExpanded: externalExpanded, onToggleExpand }) {
               Perfil
             </span>
           )}
-        </NavLink>
+        </button>
       </nav>
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onSpotifyLogin={() => setIsLoginOpen(false)}
+      />
     </aside>
   );
 }

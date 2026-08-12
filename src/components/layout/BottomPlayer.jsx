@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Play,
   Pause,
@@ -33,10 +33,15 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
     setIsExpanded,
     seekTo,
     setVolume,
-    toggleMute
+    toggleMute,
+    playNext,
+    playPrev,
+    addFavorite,
+    removeFavorite,
+    isFavorite
   } = usePlayerStore();
 
-  const [isLiked, setIsLiked] = useState(true);
+  const liked = isFavorite(currentSong?.id);
   const [animateKey, setAnimateKey] = useState(0);
 
   useEffect(() => {
@@ -103,13 +108,14 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setIsLiked(!isLiked);
+                if (liked) removeFavorite(currentSong.id);
+                else addFavorite(currentSong);
               }}
               className={`ml-1 hidden flex-shrink-0 transition-colors duration-200 hover:text-white sm:block ${
-                isLiked ? "text-[#F1FF00]" : "text-[#9bb2c4]"
+                liked ? "text-[#F1FF00]" : "text-[#9bb2c4]"
               }`}
             >
-              <Heart className="h-4 w-4 fill-current" />
+              <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
             </button>
           </div>
 
@@ -118,7 +124,10 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
               <button className="hidden text-[#9bb2c4] transition-colors hover:text-white sm:block">
                 <Shuffle className="h-3.5 w-3.5" />
               </button>
-              <button className="text-[#9bb2c4] transition-colors hover:text-white">
+              <button
+                onClick={(e) => { e.stopPropagation(); playPrev(); }}
+                className="text-[#9bb2c4] transition-colors hover:text-white"
+              >
                 <SkipBack className="h-4 w-4 fill-current" />
               </button>
               <button
@@ -134,7 +143,10 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
                   <Play className="h-4 w-4 fill-current ml-0.5" />
                 )}
               </button>
-              <button className="text-[#9bb2c4] transition-colors hover:text-white">
+              <button
+                onClick={(e) => { e.stopPropagation(); playNext(); }}
+                className="text-[#9bb2c4] transition-colors hover:text-white"
+              >
                 <SkipForward className="h-4 w-4 fill-current" />
               </button>
               <button className="hidden text-[#9bb2c4] transition-colors hover:text-white sm:block">

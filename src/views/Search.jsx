@@ -33,7 +33,7 @@ export function Search() {
     setIsLoading(true);
 
     Promise.all([
-      searchSpotifyTracks(query, 10),
+      searchSpotifyTracks(query, 5),
       searchSpotifyArtists(query, 1),
       searchSpotifyAlbums(query, 1)
     ])
