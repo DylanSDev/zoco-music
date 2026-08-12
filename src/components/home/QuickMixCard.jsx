@@ -1,8 +1,20 @@
 import { Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-export function QuickMixCard({ title, imageUrl }) {
+export function QuickMixCard({ title, imageUrl, id, typeRoute }) {
+  const navigate = useNavigate();
+  
+  const handleClick = () => {
+    if (id && typeRoute) {
+      navigate(`/detail/${typeRoute}/${id}`);
+    }
+  };
+
   return (
-    <div className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-white/5 bg-black/20 pr-4 transition-all duration-300 hover:bg-black/40 backdrop-blur-md">
+    <div 
+      onClick={handleClick}
+      className="group relative flex items-center gap-4 overflow-hidden rounded-xl border border-white/5 bg-black/20 pr-4 transition-all duration-300 hover:bg-black/40 backdrop-blur-md cursor-pointer"
+    >
       <div className="h-16 w-16 flex-shrink-0 overflow-hidden">
         <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
       </div>

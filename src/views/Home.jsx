@@ -92,7 +92,13 @@ export function Home() {
           <SectionHeader title="Tus Mixes" isNeon={true} />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {quickMixes.map((mix, index) => (
-              <QuickMixCard key={index} title={mix.title} imageUrl={mix.imageUrl} />
+              <QuickMixCard 
+                key={index} 
+                title={mix.title} 
+                imageUrl={mix.imageUrl} 
+                id={mix.title.toLowerCase().replace(/\s+/g, '-')}
+                typeRoute="mix"
+              />
             ))}
           </div>
         </section>

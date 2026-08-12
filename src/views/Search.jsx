@@ -35,6 +35,8 @@ export function Search() {
               subtitle="Banda de Rock Británico"
               type={topResult.type} 
               imageUrl={topResult.imageUrl} 
+              id="oasis"
+              typeRoute="artist"
             />
           </div>
         </section>
@@ -48,6 +50,8 @@ export function Search() {
               type="Álbum"
               isAlbum={true}
               imageUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI8wvVBRcH0f_pwjb_QltOM5dwyLnHa9DUUHMnkWSB-w&s" 
+              id="morning-glory"
+              typeRoute="album"
             />
           </div>
         </section>

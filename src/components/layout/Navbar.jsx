@@ -21,7 +21,7 @@ export function Navbar({ placeholder = "Buscar artistas, canciones, podcasts..."
   };
 
   return (
-    <nav className="flex w-full items-center justify-between mb-8">
+    <nav className="relative z-20 flex w-full items-center justify-between mb-8">
       <form onSubmit={handleSearch} className="relative w-full max-w-2xl">
         <Search className="absolute left-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-white/70 pointer-events-none" />
         <input
