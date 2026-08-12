@@ -16,7 +16,7 @@ export function MainLayout({ children, navbarPlaceholder }) {
         onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
       />
 
-      <div className="relative z-10 flex-1 h-screen overflow-y-auto pb-40 pt-6 px-4 md:pt-12 md:px-12 lg:px-16 2xl:px-24">
+      <div className="relative z-10 flex-1 h-screen overflow-y-auto no-scrollbar pb-40 pt-6 px-4 md:pt-12 md:px-12 lg:px-16 2xl:px-24">
         <Navbar placeholder={navbarPlaceholder} />
         {children}
       </div>
