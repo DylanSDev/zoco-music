@@ -11,9 +11,11 @@ export const TrackList = ({ tracks = [], artistName }) => {
     } else {
       playSong({
         title: track.title,
-        artist: artistName || "Artista",
-        imageUrl: track.image,
+        artist: artistName || track.artist || "Artista",
+        imageUrl: track.image || track.imageUrl,
         duration: track.duration || "3:30",
+        previewUrl: track.previewUrl,
+        spotifyUri: track.spotifyUri
       });
     }
     if (window.innerWidth < 768) {
@@ -24,13 +26,13 @@ export const TrackList = ({ tracks = [], artistName }) => {
   return (
     <div className="flex flex-col w-full font-inter">
       <h2 className="text-xl font-bold text-white mb-4 px-4 py-1 font-[Montserrat_Arabic]">Popular</h2>
-      
+
       <div className="flex flex-col gap-2">
         {tracks.map((track, index) => {
           const isCurrentTrack = currentSong?.title === track.title;
           return (
             <div
-              key={track.id}
+              key={track.id || index}
               onClick={() => handleTrackClick(track)}
               className={`flex items-center gap-4 p-3 rounded-xl border transition-all duration-300 group cursor-pointer ${
                 isCurrentTrack
@@ -56,13 +58,13 @@ export const TrackList = ({ tracks = [], artistName }) => {
                   </>
                 )}
               </div>
-              
+
               <img
-                src={track.image}
+                src={track.image || track.imageUrl}
                 alt={track.title}
                 className="w-10 h-10 rounded-md object-cover flex-shrink-0"
               />
-              
+
               <div className="flex-1 min-w-0">
                 <h3
                   className={`font-medium text-sm truncate transition-colors ${
@@ -72,11 +74,11 @@ export const TrackList = ({ tracks = [], artistName }) => {
                   {track.title}
                 </h3>
               </div>
-              
+
               <span className="text-white/40 text-xs text-right w-24 hidden md:block">
-                {track.plays}
+                {track.plays || ""}
               </span>
-              
+
               <span className="text-white/40 text-xs w-10 text-right">
                 {track.duration}
               </span>
@@ -87,4 +89,3 @@ export const TrackList = ({ tracks = [], artistName }) => {
     </div>
   );
 };
-

@@ -1,8 +1,10 @@
 import { useState } from "react";
 
-export function FilterChips({ chips = [] }) {
-  const [activeChip, setActiveChip] = useState("Todos");
+export function FilterChips({ chips = [], activeChip: externalActive, onSelectChip }) {
+  const [internalActive, setInternalActive] = useState("Todos");
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const activeChip = externalActive !== undefined ? externalActive : internalActive;
 
   const defaultChips = [
     "Todos",
@@ -13,11 +15,18 @@ export function FilterChips({ chips = [] }) {
     "Viaje diario",
     "Relajación",
     "Romance",
-    "Triste",
-    "Concentración",
+    "Concentración"
   ];
 
   const list = chips.length > 0 ? chips : defaultChips;
+
+  const handleChipClick = (chip) => {
+    if (onSelectChip) {
+      onSelectChip(chip);
+    } else {
+      setInternalActive(chip);
+    }
+  };
 
   return (
     <div className="flex flex-col items-start justify-start mb-8 w-full">
@@ -33,7 +42,7 @@ export function FilterChips({ chips = [] }) {
           return (
             <button
               key={index}
-              onClick={() => setActiveChip(chip)}
+              onClick={() => handleChipClick(chip)}
               className={`rounded-xl px-3 py-1.5 md:px-4 md:py-2 font-sans text-xs font-semibold transition-all duration-200 border cursor-pointer ${
                 isActive
                   ? "bg-[#F1FF00] text-[#06131c] border-[#F1FF00] font-bold shadow-neon"

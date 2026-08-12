@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { QuickMixCard } from "../components/home/QuickMixCard";
 import { MusicCard } from "../components/home/MusicCard";
 import { SongRow } from "../components/home/SongRow";
@@ -5,35 +6,20 @@ import { VibeCard } from "../components/home/VibeCard";
 import { SectionHeader } from "../components/common/SectionHeader";
 import { FilterChips } from "../components/home/FilterChips";
 import { MainLayout } from "../components/layout/MainLayout";
+import { searchSpotifyTracks, searchSpotifyPlaylists } from "../services/spotifyApi";
+import { useSpotifyStore } from "../store/useSpotifyStore";
 
 export function Home() {
-  const dailyMixImage = "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/daily-music-remix-spotify-album-cover-art-design-template-1ea8a797c35a4eafb323d9c3f7d08130_screen.jpg?ts=1602184061";
-  const venngageImage = "https://cdn.venngage.com/template/thumbnail/small/bf008bfe-9bf6-4511-b795-e86f070bfff5.webp";
-  const gstaticImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_KUyYdZviDH5CCB9qsTYsPZuxEsh1UIZP-nCeTVoNsPx0FR_elQd8obIO&s=10";
+  const isAuthenticated = useSpotifyStore((s) => s.isAuthenticated);
+  const [quickMixes, setQuickMixes] = useState([]);
+  const [recommended, setRecommended] = useState([]);
+  const [newReleases, setNewReleases] = useState([]);
+  const [vibeTracks, setVibeTracks] = useState([]);
+  const [activeVibe, setActiveVibe] = useState(null);
+  const [activeChip, setActiveChip] = useState("Todos");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const quickMixes = [
-    { title: "Daily Mix 1", imageUrl: dailyMixImage },
-    { title: "Synthwave Nights", imageUrl: venngageImage },
-    { title: "Techno Bunker", imageUrl: gstaticImage },
-    { title: "Chillout Lounge", imageUrl: venngageImage },
-    { title: "Heavy Bass Mix", imageUrl: gstaticImage },
-    { title: "Retrowave", imageUrl: dailyMixImage },
-  ];
 
-  const recommended = [
-    { title: "Midnight Drive", subtitle: "Cybernetic Pulse", imageUrl: dailyMixImage },
-    { title: "Neon Lights", subtitle: "The Midnight", imageUrl: venngageImage },
-    { title: "Dark Matter", subtitle: "Techno Syndicate", imageUrl: gstaticImage },
-    { title: "Ocean Breeze", subtitle: "Chill Vibes", imageUrl: dailyMixImage },
-  ];
-
-  const newReleases = [
-    { title: "Electric Dreams", artist: "Synthwave Sessions", duration: "3:45", imageUrl: venngageImage, isFavorite: false },
-    { title: "Future Past", artist: "Retro Collective", duration: "4:12", imageUrl: gstaticImage, isFavorite: false },
-    { title: "Bass Drop", artist: "DJ Max", duration: "2:58", imageUrl: dailyMixImage, isFavorite: true },
-    { title: "Acid Rain", artist: "Techno Core", duration: "3:15", imageUrl: venngageImage, isFavorite: true },
-    { title: "Summer Breeze", artist: "Chill Agents", duration: "4:05", imageUrl: gstaticImage, isFavorite: false },
-  ];
 
   const vibes = [
     {
@@ -42,7 +28,7 @@ export function Home() {
       ambientGlowClass: "from-cyan-500/35 via-blue-950/40 to-transparent",
       hoverTextColor: "group-hover:text-cyan-400 group-hover:drop-shadow-[0_0_12px_rgba(34,211,238,0.8)]",
       hoverBorderColor: "hover:border-cyan-400/50 hover:shadow-[0_0_25px_rgba(34,211,238,0.25)]",
-      glowBlobColor: "bg-cyan-400/20 group-hover:bg-cyan-400/40",
+      glowBlobColor: "bg-cyan-400/20 group-hover:bg-cyan-400/40"
     },
     {
       genre: "Chillout",
@@ -50,7 +36,7 @@ export function Home() {
       ambientGlowClass: "from-[#F1FF00]/30 via-teal-950/40 to-transparent",
       hoverTextColor: "group-hover:text-[#F1FF00] group-hover:drop-shadow-[0_0_12px_rgba(241,255,0,0.8)]",
       hoverBorderColor: "hover:border-[#F1FF00]/50 hover:shadow-[0_0_25px_rgba(241,255,0,0.25)]",
-      glowBlobColor: "bg-[#F1FF00]/20 group-hover:bg-[#F1FF00]/40",
+      glowBlobColor: "bg-[#F1FF00]/20 group-hover:bg-[#F1FF00]/40"
     },
     {
       genre: "Synthwave",
@@ -58,7 +44,7 @@ export function Home() {
       ambientGlowClass: "from-fuchsia-500/35 via-purple-950/40 to-transparent",
       hoverTextColor: "group-hover:text-fuchsia-400 group-hover:drop-shadow-[0_0_12px_rgba(232,121,249,0.8)]",
       hoverBorderColor: "hover:border-fuchsia-400/50 hover:shadow-[0_0_25px_rgba(232,121,249,0.25)]",
-      glowBlobColor: "bg-fuchsia-400/20 group-hover:bg-fuchsia-400/40",
+      glowBlobColor: "bg-fuchsia-400/20 group-hover:bg-fuchsia-400/40"
     },
     {
       genre: "Perreo",
@@ -66,9 +52,69 @@ export function Home() {
       ambientGlowClass: "from-emerald-500/35 via-rose-950/40 to-transparent",
       hoverTextColor: "group-hover:text-emerald-400 group-hover:drop-shadow-[0_0_12px_rgba(52,211,153,0.8)]",
       hoverBorderColor: "hover:border-emerald-400/50 hover:shadow-[0_0_25px_rgba(52,211,153,0.25)]",
-      glowBlobColor: "bg-emerald-400/20 group-hover:bg-emerald-400/40",
-    },
+      glowBlobColor: "bg-emerald-400/20 group-hover:bg-emerald-400/40"
+    }
   ];
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadSpotifyHomeData() {
+      setIsLoading(true);
+      try {
+        const [mixData, recData, newRelData] = await Promise.all([
+          searchSpotifyPlaylists("Mix", 6),
+          searchSpotifyTracks("Top Hits", 4),
+          searchSpotifyTracks("Pop Rock", 5)
+        ]);
+
+        if (isMounted) {
+          setQuickMixes(mixData);
+          setRecommended(recData);
+          setNewReleases(newRelData);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    loadSpotifyHomeData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleVibeClick = async (genre) => {
+    if (activeVibe === genre) {
+      setActiveVibe(null);
+      setVibeTracks([]);
+      return;
+    }
+
+    setActiveVibe(genre);
+    setIsLoading(true);
+    const tracks = await searchSpotifyTracks(genre, 8);
+    setVibeTracks(tracks);
+    setIsLoading(false);
+  };
+
+  const handleChipSelect = async (chip) => {
+    setActiveChip(chip);
+    if (chip === "Todos") {
+      setActiveVibe(null);
+      setVibeTracks([]);
+      return;
+    }
+
+    setIsLoading(true);
+    const tracks = await searchSpotifyTracks(chip, 8);
+    setVibeTracks(tracks);
+    setActiveVibe(chip);
+    setIsLoading(false);
+  };
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -84,30 +130,68 @@ export function Home() {
       </h1>
 
       <div className="animate-[fadeIn_0.4s_ease-out_both]">
-        <FilterChips />
+        <FilterChips activeChip={activeChip} onSelectChip={handleChipSelect} />
       </div>
 
       <main className="space-y-10">
         <section className="animate-[fadeIn_0.5s_ease-out_0.1s_both]">
-          <SectionHeader title="Tus Mixes" isNeon={true} />
+          <SectionHeader title={isAuthenticated ? "Tus Mixes" : "Mixes"} isNeon={true} />
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {quickMixes.map((mix, index) => (
-              <QuickMixCard 
-                key={index} 
-                title={mix.title} 
-                imageUrl={mix.imageUrl} 
-                id={mix.title.toLowerCase().replace(/\s+/g, '-')}
+              <QuickMixCard
+                key={mix.id || index}
+                title={mix.title}
+                imageUrl={mix.imageUrl}
+                id={mix.id || mix.title.toLowerCase().replace(/\s+/g, "-")}
                 typeRoute="mix"
               />
             ))}
           </div>
         </section>
 
+        {activeVibe && (
+          <section className="animate-[fadeIn_0.5s_ease-out_both] p-5 rounded-2xl border border-[#F1FF00]/30 bg-[#0F2A3B]/60 backdrop-blur-xl">
+            <div className="flex items-center justify-between mb-4">
+              <SectionHeader title={`Canciones de Vibra: ${activeVibe}`} isNeon={true} />
+              <button
+                onClick={() => {
+                  setActiveVibe(null);
+                  setVibeTracks([]);
+                }}
+                className="text-xs text-[#F1FF00] hover:underline"
+              >
+                Limpiar filtro
+              </button>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {vibeTracks.map((song, index) => (
+                <SongRow
+                  key={song.id || index}
+                  title={song.title}
+                  artist={song.artist}
+                  duration={song.duration}
+                  imageUrl={song.imageUrl}
+                  previewUrl={song.previewUrl}
+                  spotifyUri={song.spotifyUri}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className="animate-[fadeIn_0.6s_ease-out_0.2s_both]">
           <SectionHeader title="Recomendados para ti" />
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {recommended.map((item, index) => (
-              <MusicCard key={index} title={item.title} subtitle={item.subtitle} imageUrl={item.imageUrl} />
+              <MusicCard
+                key={item.id || index}
+                title={item.title}
+                subtitle={item.artist || item.subtitle}
+                imageUrl={item.imageUrl}
+                duration={item.duration}
+                previewUrl={item.previewUrl}
+                spotifyUri={item.spotifyUri}
+              />
             ))}
           </div>
         </section>
@@ -118,12 +202,13 @@ export function Home() {
             <div className="flex flex-col justify-between flex-1 space-y-3">
               {newReleases.map((song, index) => (
                 <SongRow
-                  key={index}
+                  key={song.id || index}
                   title={song.title}
                   artist={song.artist}
                   duration={song.duration}
                   imageUrl={song.imageUrl}
-                  isFavoriteInitial={song.isFavorite}
+                  previewUrl={song.previewUrl}
+                  spotifyUri={song.spotifyUri}
                 />
               ))}
             </div>
@@ -141,6 +226,8 @@ export function Home() {
                   hoverTextColor={vibe.hoverTextColor}
                   hoverBorderColor={vibe.hoverBorderColor}
                   glowBlobColor={vibe.glowBlobColor}
+                  isSelected={activeVibe === vibe.genre}
+                  onClick={() => handleVibeClick(vibe.genre)}
                 />
               ))}
             </div>
@@ -150,4 +237,5 @@ export function Home() {
     </MainLayout>
   );
 }
+
 export default Home;

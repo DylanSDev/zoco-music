@@ -5,6 +5,7 @@ import { useSpotifyStore } from "../../store/useSpotifyStore";
 export function AudioEngine() {
   const audioRef = useRef(null);
   const playerRef = useRef(null);
+  const currentPreviewUrlRef = useRef("");
   const [deviceId, setDeviceId] = useState(null);
 
   const {
@@ -24,6 +25,7 @@ export function AudioEngine() {
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio();
+      audioRef.current.crossOrigin = "anonymous";
     }
     const audio = audioRef.current;
 
@@ -112,19 +114,23 @@ export function AudioEngine() {
     const audio = audioRef.current;
     if (!audio) return;
 
-    if (currentSong?.previewUrl) {
-      if (audio.src !== currentSong.previewUrl) {
-        audio.src = currentSong.previewUrl;
-        audio.currentTime = 0;
-      }
+    const url = currentSong?.previewUrl || "";
+    if (url && currentPreviewUrlRef.current !== url) {
+      currentPreviewUrlRef.current = url;
+      audio.src = url;
+      audio.currentTime = 0;
+    }
 
-      if (isPlaying) {
-        audio.play().catch(() => setIsPlaying(false));
-      } else {
-        audio.pause();
+    if (url && isPlaying) {
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.error("Audio playback error", err);
+          setIsPlaying(false);
+        });
       }
-    } else if (isPlaying) {
-      setIsPlaying(false);
+    } else {
+      audio.pause();
     }
   }, [currentSong?.previewUrl, isPlaying, isPremium, setIsPlaying]);
 

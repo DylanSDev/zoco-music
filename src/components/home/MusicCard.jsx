@@ -1,7 +1,7 @@
 import { Play, Pause } from "lucide-react";
 import { usePlayerStore } from "../../store/usePlayerStore";
 
-export function MusicCard({ title, subtitle, imageUrl, duration = "3:30" }) {
+export function MusicCard({ title, subtitle, imageUrl, duration = "3:30", previewUrl, spotifyUri }) {
   const { currentSong, isPlaying, playSong, togglePlay, setIsExpanded } = usePlayerStore();
   const isCurrentTrack = currentSong?.title === title;
 
@@ -15,6 +15,8 @@ export function MusicCard({ title, subtitle, imageUrl, duration = "3:30" }) {
         artist: subtitle,
         imageUrl,
         duration,
+        previewUrl,
+        spotifyUri
       });
     }
     if (window.innerWidth < 768) {
@@ -65,4 +67,3 @@ export function MusicCard({ title, subtitle, imageUrl, duration = "3:30" }) {
     </div>
   );
 }
-

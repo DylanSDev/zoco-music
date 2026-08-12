@@ -1,14 +1,26 @@
 import { create } from "zustand";
 
-export const usePlayerStore = create((set) => ({
-  currentSong: {
-    title: "Midnight Drive",
-    artist: "Cybernetic Pulse",
-    imageUrl: "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/daily-music-remix-spotify-album-cover-art-design-template-1ea8a797c35a4eafb323d9c3f7d08130_screen.jpg?ts=1602184061",
-    duration: "0:30",
-    previewUrl: "https://p.scdn.co/mp3-preview/2f7c00e62ff1875151525a815a513524b0b14c33",
-    spotifyUri: "spotify:track:40riOyB19BabwWQZbd5Yx6"
-  },
+const LS_FAVORITES = "zoco_favorites";
+const LS_HISTORY = "zoco_history";
+const HISTORY_MAX = 30;
+
+function loadFromStorage(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveToStorage(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {}
+}
+
+export const usePlayerStore = create((set, get) => ({
+  currentSong: null,
   isPlaying: false,
   isExpanded: false,
   currentTime: 0,
@@ -18,13 +30,16 @@ export const usePlayerStore = create((set) => ({
   playbackMode: "preview",
   seekTime: null,
 
-  playSong: (song) =>
-    set({
-      currentSong: song,
-      isPlaying: true,
-      currentTime: 0,
-      seekTime: 0
-    }),
+  favorites: loadFromStorage(LS_FAVORITES, []),
+  history: loadFromStorage(LS_HISTORY, []),
+
+  playSong: (song) => {
+    const { history } = get();
+    const filtered = history.filter((h) => h.id !== song.id);
+    const newHistory = [song, ...filtered].slice(0, HISTORY_MAX);
+    saveToStorage(LS_HISTORY, newHistory);
+    set({ currentSong: song, isPlaying: true, currentTime: 0, seekTime: 0, history: newHistory });
+  },
 
   togglePlay: () => set((state) => ({ isPlaying: !state.isPlaying })),
   setIsPlaying: (isPlaying) => set({ isPlaying }),
@@ -34,5 +49,26 @@ export const usePlayerStore = create((set) => ({
   toggleMute: () => set((state) => ({ isMuted: !state.isMuted })),
   seekTo: (seconds) => set({ seekTime: seconds, currentTime: seconds }),
   setIsExpanded: (expanded) => set({ isExpanded: expanded }),
-  setPlaybackMode: (playbackMode) => set({ playbackMode })
+  setPlaybackMode: (playbackMode) => set({ playbackMode }),
+
+  addFavorite: (song) => {
+    const { favorites } = get();
+    if (favorites.some((f) => f.id === song.id)) return;
+    const next = [song, ...favorites];
+    saveToStorage(LS_FAVORITES, next);
+    set({ favorites: next });
+  },
+
+  removeFavorite: (songId) => {
+    const next = get().favorites.filter((f) => f.id !== songId);
+    saveToStorage(LS_FAVORITES, next);
+    set({ favorites: next });
+  },
+
+  isFavorite: (songId) => get().favorites.some((f) => f.id === songId),
+
+  clearHistory: () => {
+    saveToStorage(LS_HISTORY, []);
+    set({ history: [] });
+  }
 }));

@@ -2,76 +2,77 @@ import { useState } from "react";
 import { MainLayout } from "../components/layout/MainLayout";
 import { FavoritesHero } from "../components/favorites/FavoritesHero";
 import { FavoritesTrackList } from "../components/favorites/FavoritesTrackList";
-import { favoritesMockData } from "../data/favoritesMockData";
 import { usePlayerStore } from "../store/usePlayerStore";
 
 export function FavoritesView() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [likedIds, setLikedIds] = useState(
-    new Set(favoritesMockData.tracks.map((t) => t.id))
-  );
 
-  const { playSong, setIsExpanded } = usePlayerStore();
+  const { favorites, removeFavorite, playSong, setIsExpanded } = usePlayerStore();
 
-  const activeTracks = favoritesMockData.tracks.filter(
-    (t) =>
-      likedIds.has(t.id) &&
-      (t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.artist.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        t.album.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const likedIds = new Set(favorites.map((f) => f.id));
 
-  const handleToggleLike = (id) => {
-    setLikedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
+  const activeTracks = favorites
+    .filter(
+      (t) =>
+        t.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.artist?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        t.album?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .map((t) => ({
+      id: t.id,
+      title: t.title,
+      artist: t.artist,
+      album: t.album ?? "",
+      duration: t.duration,
+      image: t.imageUrl,
+      previewUrl: t.previewUrl,
+      spotifyUri: t.spotifyUri,
+      liked: true
+    }));
+
+  const handleToggleLike = (id) => removeFavorite(id);
+
+  const handlePlay = (track) => {
+    playSong({
+      id: track.id,
+      title: track.title,
+      artist: track.artist,
+      imageUrl: track.image,
+      duration: track.duration,
+      previewUrl: track.previewUrl,
+      spotifyUri: track.spotifyUri
     });
+    if (window.innerWidth < 768) setIsExpanded(true);
   };
 
   const handlePlayAll = () => {
-    if (activeTracks.length > 0) {
-      const first = activeTracks[0];
-      playSong({
-        title: first.title,
-        artist: first.artist,
-        imageUrl: first.image,
-        duration: first.duration,
-      });
-      if (window.innerWidth < 768) {
-        setIsExpanded(true);
-      }
-    }
+    if (activeTracks.length > 0) handlePlay(activeTracks[0]);
   };
 
   const handleShuffle = () => {
     if (activeTracks.length > 0) {
-      const randomIndex = Math.floor(Math.random() * activeTracks.length);
-      const randomTrack = activeTracks[randomIndex];
-      playSong({
-        title: randomTrack.title,
-        artist: randomTrack.artist,
-        imageUrl: randomTrack.image,
-        duration: randomTrack.duration,
-      });
-      if (window.innerWidth < 768) {
-        setIsExpanded(true);
-      }
+      handlePlay(activeTracks[Math.floor(Math.random() * activeTracks.length)]);
     }
   };
+
+  const totalDuration = (() => {
+    const totalSecs = activeTracks.reduce((acc, t) => {
+      const [m, s] = (t.duration || "0:00").split(":").map(Number);
+      return acc + m * 60 + (s || 0);
+    }, 0);
+    const hours = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    return hours > 0 ? `${hours}h ${mins}min` : `${mins} min`;
+  })();
 
   return (
     <MainLayout navbarPlaceholder="Buscar en tus favoritos...">
       <div className="flex flex-col gap-6 w-full pb-12">
         <FavoritesHero
-          title={favoritesMockData.title}
-          description={favoritesMockData.description}
+          title="Tus Canciones Favoritas"
+          description="Canciones que guardaste mientras escuchas."
           totalTracks={activeTracks.length}
-          totalDuration={favoritesMockData.totalDuration}
+          totalDuration={totalDuration}
           onPlayAll={handlePlayAll}
           onShuffle={handleShuffle}
           searchQuery={searchQuery}
