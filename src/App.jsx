@@ -4,6 +4,7 @@ import { Home } from "./views/Home";
 import { Search } from "./views/Search";
 import { DetailView } from "./views/DetailView";
 import { ProfileView } from "./views/ProfileView";
+import { FavoritesView } from "./views/FavoritesView";
 import "./App.css";
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
         <Route path="/" element={<SplashScreen />} />
         <Route path="/home" element={<Home />} />
         <Route path="/search" element={<Search />} />
+        <Route path="/favorites" element={<FavoritesView />} />
+        <Route path="/favoritos" element={<FavoritesView />} />
         <Route path="/profile" element={<ProfileView />} />
         <Route path="/detail" element={<DetailView />} />
         <Route path="/detail/:type/:id" element={<DetailView />} />

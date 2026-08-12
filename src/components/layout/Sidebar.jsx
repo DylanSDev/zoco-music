@@ -3,7 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import {
   Home,
   Search,
-  Library,
+  Heart,
   User,
   ChevronRight,
   ChevronLeft,
@@ -107,7 +107,7 @@ export function Sidebar({ isExpanded: externalExpanded, onToggleExpand }) {
         </NavLink>
 
         <NavLink
-          to="/library"
+          to="/favorites"
           className={({ isActive }) =>
             `group relative flex h-12 w-full items-center transition-all duration-300 ease-out rounded-lg md:rounded-r-xl md:rounded-l-lg ${
               isExpanded ? "px-4 gap-4" : "justify-center"
@@ -118,13 +118,13 @@ export function Sidebar({ isExpanded: externalExpanded, onToggleExpand }) {
             }`
           }
         >
-          <Library
+          <Heart
             className="h-5 w-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110"
             fill="currentColor"
           />
           {isExpanded && (
             <span className="font-sans text-sm font-semibold truncate animate-[fadeIn_0.2s_ease-out]">
-              Biblioteca
+              Favoritos
             </span>
           )}
         </NavLink>
