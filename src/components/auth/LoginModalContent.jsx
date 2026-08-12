@@ -4,10 +4,9 @@ import { redirectToSpotifyAuthorize } from "../../utils/spotifyAuth";
 
 export function LoginModalContent({ onClose, onSpotifyLogin }) {
   const handleSpotifyClick = () => {
+    redirectToSpotifyAuthorize();
     if (onSpotifyLogin) {
       onSpotifyLogin();
-    } else {
-      redirectToSpotifyAuthorize();
     }
   };
 

@@ -45,30 +45,49 @@ export async function redirectToSpotifyAuthorize() {
     code_challenge: challenge
   });
 
-  window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
+  const width = 450;
+  const height = 730;
+  const left = window.screen.width / 2 - width / 2;
+  const top = window.screen.height / 2 - height / 2;
+
+  window.open(
+    `https://accounts.spotify.com/authorize?${params.toString()}`,
+    "SpotifyLogin",
+    `menubar=no,location=no,resizable=no,scrollbars=no,status=no,width=${width},height=${height},top=${top},left=${left}`
+  );
 }
+
+const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET || "";
 
 export async function exchangeCodeForToken(code) {
   const verifier = window.localStorage.getItem("spotify_code_verifier");
   const redirectUri = window.location.origin + window.location.pathname;
 
   const params = new URLSearchParams({
-    client_id: CLIENT_ID,
     grant_type: "authorization_code",
     code: code,
     redirect_uri: redirectUri,
+    client_id: CLIENT_ID,
     code_verifier: verifier
   });
 
+  const headers = {
+    "Content-Type": "application/x-www-form-urlencoded"
+  };
+
+  if (CLIENT_SECRET) {
+    headers["Authorization"] = `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`;
+  }
+
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
+    headers,
     body: params
   });
 
   if (!response.ok) {
+    const errData = await response.json().catch(() => ({}));
+    console.error("Token exchange failed:", errData);
     throw new Error("Failed to exchange code for token");
   }
 

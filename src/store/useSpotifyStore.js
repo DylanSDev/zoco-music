@@ -50,20 +50,23 @@ export const useSpotifyStore = create((set, get) => ({
     });
   },
 
-  handleAuthCallback: async () => {
+  handleAuthCallback: async (externalCode) => {
     const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
+    const code = externalCode || urlParams.get("code");
 
     if (!code) return;
+
+    if (!externalCode) {
+      // Remove code from URL immediately to prevent double-firing in React StrictMode
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
 
     try {
       const tokenData = await exchangeCodeForToken(code);
       const profile = await fetchSpotifyProfile(tokenData.access_token);
 
       get().setAuthData(tokenData.access_token, tokenData.refresh_token, profile);
-
-      const cleanUrl = window.location.origin + window.location.pathname;
-      window.history.replaceState({}, document.title, cleanUrl);
     } catch (err) {
       console.error("Authentication callback error", err);
     }

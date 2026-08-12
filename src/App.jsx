@@ -14,7 +14,30 @@ function App() {
   const handleAuthCallback = useSpotifyStore((state) => state.handleAuthCallback);
 
   useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+    
+    // Si estamos en la ventana emergente, enviamos el código a la ventana principal y cerramos la emergente
+    if (code && window.opener) {
+      window.opener.postMessage({ type: "SPOTIFY_AUTH_CODE", code }, window.location.origin);
+      window.close();
+      return;
+    }
+
+    // En la ventana principal, escuchamos el código proveniente del popup
+    const handleMessage = (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type === "SPOTIFY_AUTH_CODE") {
+        handleAuthCallback(event.data.code);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    
+    // Como respaldo en caso de no estar en popup (ej: redirect tradicional)
     handleAuthCallback();
+
+    return () => window.removeEventListener("message", handleMessage);
   }, [handleAuthCallback]);
 
   return (

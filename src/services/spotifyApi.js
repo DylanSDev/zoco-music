@@ -81,12 +81,12 @@ export async function searchSpotifyTracks(query, limit = 20) {
 
 export async function getFeaturedPlaylists(limit = 6) {
   const data = await spotifyFetch(
-    `/browse/featured-playlists?${new URLSearchParams({ limit: limit.toString(), country: "US" })}`
+    `/search?${new URLSearchParams({ q: "mix", type: "playlist", limit: limit.toString() })}`
   );
   return (data?.playlists?.items ?? []).map((pl) => ({
     id: pl.id,
     title: pl.name,
-    subtitle: pl.description || "Spotify Mix",
+    subtitle: pl.owner?.display_name ? `Por ${pl.owner.display_name}` : "Spotify Mix",
     imageUrl: pl.images?.[0]?.url ?? "",
     spotifyUri: pl.uri
   }));
