@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Heart, Play, Pause } from "lucide-react";
 import { usePlayerStore } from "../../store/usePlayerStore";
 
-export function SongRow({ title, artist, duration, imageUrl, isFavoriteInitial = false }) {
+export function SongRow({ title, artist, duration, imageUrl, previewUrl, spotifyUri, isFavoriteInitial = false }) {
   const [isFavorite, setIsFavorite] = useState(isFavoriteInitial);
   const { currentSong, isPlaying, playSong, togglePlay, setIsExpanded } = usePlayerStore();
   const isCurrentTrack = currentSong?.title === title;
@@ -11,7 +11,7 @@ export function SongRow({ title, artist, duration, imageUrl, isFavoriteInitial =
     if (isCurrentTrack) {
       togglePlay();
     } else {
-      playSong({ title, artist, duration, imageUrl });
+      playSong({ title, artist, duration, imageUrl, previewUrl, spotifyUri });
     }
     if (window.innerWidth < 768) {
       setIsExpanded(true);
@@ -67,4 +67,3 @@ export function SongRow({ title, artist, duration, imageUrl, isFavoriteInitial =
     </div>
   );
 }
-

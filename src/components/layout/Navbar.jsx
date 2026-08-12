@@ -2,12 +2,15 @@ import { Search, Bell, User } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { LoginModal } from "../auth/LoginModal";
+import { useSpotifyStore } from "../../store/useSpotifyStore";
 
-export function Navbar({ placeholder = "Buscar artistas, canciones, podcasts...", isLoggedIn = true, onUserClick }) {
+export function Navbar({ placeholder = "Buscar artistas, canciones, podcasts...", onUserClick }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  const { isAuthenticated, userProfile } = useSpotifyStore();
 
   useEffect(() => {
     setQuery(searchParams.get("q") || "");
@@ -25,7 +28,7 @@ export function Navbar({ placeholder = "Buscar artistas, canciones, podcasts..."
   const handleUserIconClick = () => {
     if (onUserClick) {
       onUserClick();
-    } else if (isLoggedIn) {
+    } else if (isAuthenticated) {
       navigate("/profile");
     } else {
       setIsLoginOpen(true);
@@ -50,12 +53,21 @@ export function Navbar({ placeholder = "Buscar artistas, canciones, podcasts..."
           <button className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#0F2A3B]/40 text-[#9bb2c4] backdrop-blur-md transition-all hover:text-[#F1FF00] hover:border-[#F1FF00]/40">
             <Bell className="h-5 w-5" />
           </button>
+
           <button
             onClick={handleUserIconClick}
             aria-label="Perfil de usuario"
-            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-[#F1FF00]/40 bg-[#0F2A3B]/60 text-[#F1FF00] backdrop-blur-md transition-all duration-300 hover:shadow-neon hover:scale-105"
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-[#F1FF00]/40 bg-[#0F2A3B]/60 text-[#F1FF00] backdrop-blur-md transition-all duration-300 hover:shadow-neon hover:scale-105 overflow-hidden"
           >
-            <User className="h-5 w-5" />
+            {isAuthenticated && userProfile?.images?.[0]?.url ? (
+              <img
+                src={userProfile.images[0].url}
+                alt={userProfile.display_name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <User className="h-5 w-5" />
+            )}
           </button>
         </div>
       </nav>
@@ -65,10 +77,8 @@ export function Navbar({ placeholder = "Buscar artistas, canciones, podcasts..."
         onClose={() => setIsLoginOpen(false)}
         onSpotifyLogin={() => {
           setIsLoginOpen(false);
-          navigate("/profile");
         }}
       />
     </>
   );
 }
-

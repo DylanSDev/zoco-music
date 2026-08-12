@@ -1,7 +1,17 @@
+import { redirectToSpotifyAuthorize } from "../../utils/spotifyAuth";
+
 export function SpotifyButton({ onClick }) {
+  const handleClick = (e) => {
+    if (onClick) {
+      onClick(e);
+    } else {
+      redirectToSpotifyAuthorize();
+    }
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className="group relative flex w-full items-center justify-center gap-3 rounded-xl bg-[#1DB954] py-3.5 px-6 font-sans text-sm font-bold text-black shadow-lg shadow-[#1DB954]/20 transition-all duration-300 hover:bg-[#1ed760] hover:shadow-[#1DB954]/40 hover:scale-[1.02] active:scale-[0.98]"
     >
       <svg

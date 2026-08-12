@@ -8,15 +8,35 @@ import {
   Repeat,
   Heart,
   Volume2,
-  VolumeX,
+  VolumeX
 } from "lucide-react";
 import { usePlayerStore } from "../../store/usePlayerStore";
 import { MobilePlayerModal } from "./MobilePlayerModal";
 
+function formatSeconds(sec) {
+  if (!sec || isNaN(sec)) return "0:00";
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
+}
+
 export function BottomPlayer({ isSidebarExpanded = false }) {
-  const { currentSong, isPlaying, togglePlay, setIsExpanded } = usePlayerStore();
+  const {
+    currentSong,
+    isPlaying,
+    currentTime,
+    duration,
+    volume,
+    isMuted,
+    playbackMode,
+    togglePlay,
+    setIsExpanded,
+    seekTo,
+    setVolume,
+    toggleMute
+  } = usePlayerStore();
+
   const [isLiked, setIsLiked] = useState(true);
-  const [isMuted, setIsMuted] = useState(false);
   const [animateKey, setAnimateKey] = useState(0);
 
   useEffect(() => {
@@ -26,6 +46,24 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
   }, [currentSong?.title]);
 
   if (!currentSong) return null;
+
+  const progressPercent = duration > 0 ? Math.min((currentTime / duration) * 100, 100) : 0;
+
+  const handleSeekClick = (e) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const ratio = clickX / rect.width;
+    seekTo(ratio * duration);
+  };
+
+  const handleVolumeClick = (e) => {
+    e.stopPropagation();
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const newVol = Math.max(0, Math.min(1, clickX / rect.width));
+    setVolume(newVol);
+  };
 
   return (
     <>
@@ -37,7 +75,6 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
             : "md:left-[calc(5rem+3rem)] lg:left-[calc(5rem+4rem)] 2xl:left-[calc(5rem+6rem)]"
         } md:right-16 lg:right-20 2xl:right-28`}
         onClick={() => {
-          // Only expand on mobile (where window inner width is generally < 768px)
           if (window.innerWidth < 768) setIsExpanded(true);
         }}
       >
@@ -51,9 +88,14 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
               />
             </div>
             <div className="min-w-0">
-              <h4 className="truncate font-sans text-xs font-bold text-white md:text-sm">
-                {currentSong.title}
-              </h4>
+              <div className="flex items-center gap-2">
+                <h4 className="truncate font-sans text-xs font-bold text-white md:text-sm">
+                  {currentSong.title}
+                </h4>
+                <span className="hidden lg:inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded border border-[#F1FF00]/40 text-[#F1FF00] bg-[#F1FF00]/10">
+                  {playbackMode === "sdk" ? "Spotify Premium" : "Preview 30s"}
+                </span>
+              </div>
               <p className="truncate font-sans text-[11px] text-[#9bb2c4]">
                 {currentSong.artist}
               </p>
@@ -101,14 +143,21 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
             </div>
 
             <div className="hidden w-full items-center gap-2.5 sm:flex">
-              <span className="font-sans text-[10px] text-[#9bb2c4]">1:25</span>
-              <div className="relative h-1 flex-1 rounded-full bg-white/10">
+              <span className="font-sans text-[10px] text-[#9bb2c4] min-w-[28px]">
+                {formatSeconds(currentTime)}
+              </span>
+              <div
+                onClick={handleSeekClick}
+                className="relative h-1.5 flex-1 rounded-full bg-white/10 cursor-pointer group"
+              >
                 <div
                   className="absolute h-full rounded-full bg-gradient-to-r from-[#F1FF00] to-yellow-400"
-                  style={{ width: "35%" }}
+                  style={{ width: `${progressPercent}%` }}
                 />
               </div>
-              <span className="font-sans text-[10px] text-[#9bb2c4]">{currentSong.duration || "4:30"}</span>
+              <span className="font-sans text-[10px] text-[#9bb2c4] min-w-[28px] text-right">
+                {formatSeconds(duration)}
+              </span>
             </div>
           </div>
 
@@ -116,21 +165,23 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setIsMuted(!isMuted);
+                toggleMute();
               }}
               className="text-[#9bb2c4] transition-colors hover:text-[#F1FF00]"
             >
-              {isMuted ? (
+              {isMuted || volume === 0 ? (
                 <VolumeX className="h-4 w-4 text-[#9bb2c4]/50" />
               ) : (
                 <Volume2 className="h-4 w-4" />
               )}
             </button>
-            <div className="relative h-1 w-20 rounded-full bg-white/10 cursor-pointer">
+            <div
+              onClick={handleVolumeClick}
+              className="relative h-1.5 w-20 rounded-full bg-white/10 cursor-pointer"
+            >
               <div
-                className={`absolute h-full rounded-full transition-all ${
-                  isMuted ? "bg-white/20 w-0" : "bg-[#F1FF00] w-[70%]"
-                }`}
+                className="absolute h-full rounded-full bg-[#F1FF00] transition-all"
+                style={{ width: `${isMuted ? 0 : volume * 100}%` }}
               />
             </div>
           </div>

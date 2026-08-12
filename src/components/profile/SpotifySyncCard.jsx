@@ -1,6 +1,10 @@
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, LogOut, Music2 } from "lucide-react";
+import { useSpotifyStore } from "../../store/useSpotifyStore";
+import { redirectToSpotifyAuthorize } from "../../utils/spotifyAuth";
 
-export function SpotifySyncCard({ status = "Sincronizado" }) {
+export function SpotifySyncCard() {
+  const { isAuthenticated, userProfile, isPremium, logout } = useSpotifyStore();
+
   return (
     <div className="w-full my-4 rounded-2xl border border-emerald-500/20 bg-[#0A1A24]/60 backdrop-blur-xl p-5 md:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg hover:border-emerald-500/40 transition-all duration-300">
       <div className="flex items-center gap-4 text-center sm:text-left">
@@ -11,17 +15,44 @@ export function SpotifySyncCard({ status = "Sincronizado" }) {
         </div>
         <div className="flex flex-col">
           <h3 className="font-heading text-lg font-bold text-white leading-tight">
-            Conectado a Spotify Web API
+            {isAuthenticated
+              ? `Conectado como ${userProfile?.display_name || "Usuario de Spotify"}`
+              : "Conecta tu cuenta de Spotify"}
           </h3>
           <p className="font-sans text-xs text-[#9bb2c4] mt-0.5">
-            Sincronización de playlists activa
+            {isAuthenticated
+              ? isPremium
+                ? "Suscripción Spotify Premium (Reproducción HD Completa)"
+                : "Cuenta Spotify Free (Vistas previas de 30s)"
+              : "Inicia sesión para streaming de canciones completas"}
           </p>
         </div>
       </div>
 
-      <div className="px-4 py-1.5 rounded-full border border-[#F1FF00]/30 bg-[#0F2A3B]/90 text-[#F1FF00] text-xs font-semibold flex items-center gap-2 shadow-neon flex-shrink-0">
-        <CheckCircle2 className="h-4 w-4 text-[#F1FF00]" />
-        <span>{status}</span>
+      <div className="flex items-center gap-3 flex-shrink-0">
+        {isAuthenticated ? (
+          <>
+            <div className="px-4 py-1.5 rounded-full border border-[#F1FF00]/30 bg-[#0F2A3B]/90 text-[#F1FF00] text-xs font-semibold flex items-center gap-2 shadow-neon">
+              <CheckCircle2 className="h-4 w-4 text-[#F1FF00]" />
+              <span>{isPremium ? "Premium Active" : "Sincronizado"}</span>
+            </div>
+            <button
+              onClick={logout}
+              className="p-2 rounded-full border border-white/10 bg-white/5 text-[#9bb2c4] hover:text-white hover:bg-white/10 transition-all"
+              title="Desconectar Spotify"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={redirectToSpotifyAuthorize}
+            className="px-4 py-2 rounded-xl bg-[#1DB954] hover:bg-[#1ed760] text-black font-bold text-xs flex items-center gap-2 shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            <Music2 className="h-4 w-4" />
+            <span>Conectar</span>
+          </button>
+        )}
       </div>
     </div>
   );

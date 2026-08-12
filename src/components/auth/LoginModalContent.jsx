@@ -1,7 +1,16 @@
 import { X } from "lucide-react";
 import { SpotifyButton } from "./SpotifyButton";
+import { redirectToSpotifyAuthorize } from "../../utils/spotifyAuth";
 
 export function LoginModalContent({ onClose, onSpotifyLogin }) {
+  const handleSpotifyClick = () => {
+    if (onSpotifyLogin) {
+      onSpotifyLogin();
+    } else {
+      redirectToSpotifyAuthorize();
+    }
+  };
+
   return (
     <div className="relative flex flex-col justify-between p-5 md:p-8 md:w-1/2 overflow-hidden">
       <button
@@ -22,7 +31,7 @@ export function LoginModalContent({ onClose, onSpotifyLogin }) {
       </div>
 
       <div className="mt-5 md:mt-8 flex flex-col gap-3 md:gap-4">
-        <SpotifyButton onClick={onSpotifyLogin} />
+        <SpotifyButton onClick={handleSpotifyClick} />
         <p className="font-sans text-[10px] md:text-[11px] leading-tight text-center text-[#9bb2c4]/60 max-w-xs mx-auto">
           Solo utilizamos tu cuenta para sincronizar tu música. No publicaremos nada sin tu permiso.
         </p>
@@ -30,4 +39,3 @@ export function LoginModalContent({ onClose, onSpotifyLogin }) {
     </div>
   );
 }
-
