@@ -41,11 +41,11 @@ export const DetailView = () => {
       </div>
       
       <div className="max-w-7xl mx-auto">
-        <DetailActions />
+        <DetailActions tracks={data.tracks} artistName={data.title} />
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 px-6 md:px-10 mt-4">
           <div className="lg:col-span-8">
-            <TrackList tracks={data.tracks} />
+            <TrackList tracks={data.tracks} artistName={data.title} />
           </div>
           
           <div className="lg:col-span-4">
