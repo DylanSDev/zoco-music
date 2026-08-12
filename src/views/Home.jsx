@@ -166,6 +166,7 @@ export function Home() {
                 duration={item.duration}
                 previewUrl={item.previewUrl}
                 spotifyUri={item.spotifyUri}
+                queue={recommended}
               />
             ))}
           </div>
@@ -185,6 +186,7 @@ export function Home() {
                   imageUrl={song.imageUrl}
                   previewUrl={song.previewUrl}
                   spotifyUri={song.spotifyUri}
+                  queue={newReleases}
                 />
               ))}
             </div>
@@ -232,6 +234,7 @@ export function Home() {
                   imageUrl={song.imageUrl}
                   previewUrl={song.previewUrl}
                   spotifyUri={song.spotifyUri}
+                  queue={vibeTracks}
                 />
               ))}
             </div>

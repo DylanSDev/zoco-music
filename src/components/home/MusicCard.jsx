@@ -1,9 +1,9 @@
 import { Play, Pause } from "lucide-react";
 import { usePlayerStore } from "../../store/usePlayerStore";
 
-export function MusicCard({ title, subtitle, imageUrl, duration = "3:30", previewUrl, spotifyUri }) {
+export function MusicCard({ id, title, subtitle, imageUrl, duration = "3:30", previewUrl, spotifyUri, queue }) {
   const { currentSong, isPlaying, playSong, togglePlay, setIsExpanded } = usePlayerStore();
-  const isCurrentTrack = currentSong?.title === title;
+  const isCurrentTrack = currentSong?.id === id;
 
   const handlePlay = (e) => {
     e.stopPropagation();
@@ -11,13 +11,14 @@ export function MusicCard({ title, subtitle, imageUrl, duration = "3:30", previe
       togglePlay();
     } else {
       playSong({
+        id,
         title,
         artist: subtitle,
         imageUrl,
         duration,
         previewUrl,
         spotifyUri
-      });
+      }, queue ?? null);
     }
     if (window.innerWidth < 768) {
       setIsExpanded(true);

@@ -41,7 +41,7 @@ export function FavoritesView() {
       duration: track.duration,
       previewUrl: track.previewUrl,
       spotifyUri: track.spotifyUri
-    });
+    }, activeTracks);
     if (window.innerWidth < 768) setIsExpanded(true);
   };
 

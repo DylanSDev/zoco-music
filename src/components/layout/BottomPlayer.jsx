@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  Play,
-  Pause,
-  SkipBack,
-  SkipForward,
-  Shuffle,
-  Repeat,
-  Heart,
-  Volume2,
-  VolumeX
+  Play, Pause, SkipBack, SkipForward,
+  Shuffle, Repeat, Heart, Volume2, VolumeX
 } from "lucide-react";
 import { usePlayerStore } from "../../store/usePlayerStore";
 import { MobilePlayerModal } from "./MobilePlayerModal";
@@ -22,33 +15,19 @@ function formatSeconds(sec) {
 
 export function BottomPlayer({ isSidebarExpanded = false }) {
   const {
-    currentSong,
-    isPlaying,
-    currentTime,
-    duration,
-    volume,
-    isMuted,
-    playbackMode,
-    togglePlay,
-    setIsExpanded,
-    seekTo,
-    setVolume,
-    toggleMute,
-    playNext,
-    playPrev,
-    addFavorite,
-    removeFavorite,
-    isFavorite
+    currentSong, isPlaying, currentTime, duration,
+    volume, isMuted, playbackMode,
+    togglePlay, setIsExpanded, seekTo, setVolume, toggleMute,
+    playNext, playPrev,
+    addFavorite, removeFavorite, isFavorite
   } = usePlayerStore();
 
-  const liked = isFavorite(currentSong?.id);
   const [animateKey, setAnimateKey] = useState(0);
+  const liked = isFavorite(currentSong?.id);
 
   useEffect(() => {
-    if (currentSong) {
-      setAnimateKey((prev) => prev + 1);
-    }
-  }, [currentSong?.title]);
+    if (currentSong) setAnimateKey((p) => p + 1);
+  }, [currentSong?.id]);
 
   if (!currentSong) return null;
 
@@ -57,17 +36,13 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
   const handleSeekClick = (e) => {
     e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const ratio = clickX / rect.width;
-    seekTo(ratio * duration);
+    seekTo((e.clientX - rect.left) / rect.width * duration);
   };
 
   const handleVolumeClick = (e) => {
     e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const newVol = Math.max(0, Math.min(1, clickX / rect.width));
-    setVolume(newVol);
+    setVolume(Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)));
   };
 
   return (
@@ -79,18 +54,12 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
             ? "md:left-[calc(14rem+3rem)] lg:left-[calc(14rem+4rem)] 2xl:left-[calc(14rem+6rem)]"
             : "md:left-[calc(5rem+3rem)] lg:left-[calc(5rem+4rem)] 2xl:left-[calc(5rem+6rem)]"
         } md:right-16 lg:right-20 2xl:right-28`}
-        onClick={() => {
-          if (window.innerWidth < 768) setIsExpanded(true);
-        }}
+        onClick={() => { if (window.innerWidth < 768) setIsExpanded(true); }}
       >
         <div className="flex items-center justify-between gap-4">
           <div key={animateKey} className="flex items-center gap-3 min-w-0 animate-[fadeIn_0.4s_ease-out_both]">
             <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 md:h-11 md:w-11">
-              <img
-                src={currentSong.imageUrl}
-                alt={currentSong.title}
-                className="h-full w-full object-cover"
-              />
+              <img src={currentSong.imageUrl} alt={currentSong.title} className="h-full w-full object-cover" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
@@ -98,18 +67,15 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
                   {currentSong.title}
                 </h4>
                 <span className="hidden lg:inline-block text-[9px] font-semibold px-1.5 py-0.5 rounded border border-[#F1FF00]/40 text-[#F1FF00] bg-[#F1FF00]/10">
-                  {playbackMode === "sdk" ? "Spotify Premium" : "Preview 30s"}
+                  {playbackMode === "sdk" ? "Premium" : "Preview"}
                 </span>
               </div>
-              <p className="truncate font-sans text-[11px] text-[#9bb2c4]">
-                {currentSong.artist}
-              </p>
+              <p className="truncate font-sans text-[11px] text-[#9bb2c4]">{currentSong.artist}</p>
             </div>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                if (liked) removeFavorite(currentSong.id);
-                else addFavorite(currentSong);
+                liked ? removeFavorite(currentSong.id) : addFavorite(currentSong);
               }}
               className={`ml-1 hidden flex-shrink-0 transition-colors duration-200 hover:text-white sm:block ${
                 liked ? "text-[#F1FF00]" : "text-[#9bb2c4]"
@@ -131,17 +97,13 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
                 <SkipBack className="h-4 w-4 fill-current" />
               </button>
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  togglePlay();
-                }}
+                onClick={(e) => { e.stopPropagation(); togglePlay(); }}
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F1FF00] text-[#06131c] shadow-neon transition-transform duration-200 hover:scale-105 active:scale-95"
               >
-                {isPlaying ? (
-                  <Pause className="h-4 w-4 fill-current" />
-                ) : (
-                  <Play className="h-4 w-4 fill-current ml-0.5" />
-                )}
+                {isPlaying
+                  ? <Pause className="h-4 w-4 fill-current" />
+                  : <Play className="h-4 w-4 fill-current ml-0.5" />
+                }
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); playNext(); }}
@@ -160,7 +122,7 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
               </span>
               <div
                 onClick={handleSeekClick}
-                className="relative h-1.5 flex-1 rounded-full bg-white/10 cursor-pointer group"
+                className="relative h-1.5 flex-1 rounded-full bg-white/10 cursor-pointer"
               >
                 <div
                   className="absolute h-full rounded-full bg-gradient-to-r from-[#F1FF00] to-yellow-400"
@@ -175,17 +137,13 @@ export function BottomPlayer({ isSidebarExpanded = false }) {
 
           <div className="hidden items-center gap-2.5 sm:flex min-w-[120px] justify-end">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleMute();
-              }}
+              onClick={(e) => { e.stopPropagation(); toggleMute(); }}
               className="text-[#9bb2c4] transition-colors hover:text-[#F1FF00]"
             >
-              {isMuted || volume === 0 ? (
-                <VolumeX className="h-4 w-4 text-[#9bb2c4]/50" />
-              ) : (
-                <Volume2 className="h-4 w-4" />
-              )}
+              {isMuted || volume === 0
+                ? <VolumeX className="h-4 w-4 text-[#9bb2c4]/50" />
+                : <Volume2 className="h-4 w-4" />
+              }
             </button>
             <div
               onClick={handleVolumeClick}

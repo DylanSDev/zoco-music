@@ -16,7 +16,7 @@ export const TrackList = ({ tracks = [], artistName }) => {
         duration: track.duration || "3:30",
         previewUrl: track.previewUrl,
         spotifyUri: track.spotifyUri
-      });
+      }, tracks);
     }
     if (window.innerWidth < 768) {
       setIsExpanded(true);

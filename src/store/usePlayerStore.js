@@ -25,6 +25,7 @@ export const usePlayerStore = create((set, get) => ({
   queueIndex: -1,
   isPlaying: false,
   isExpanded: false,
+  showPreviewModal: false,
   currentTime: 0,
   duration: 30,
   volume: 0.8,
@@ -46,7 +47,7 @@ export const usePlayerStore = create((set, get) => ({
 
     set({
       currentSong: song,
-      queue: newQueue,
+      queue: newIndex >= 0 ? newQueue : [song],
       queueIndex: newIndex >= 0 ? newIndex : 0,
       isPlaying: true,
       currentTime: 0,
@@ -92,6 +93,7 @@ export const usePlayerStore = create((set, get) => ({
   seekTo: (seconds) => set({ seekTime: seconds, currentTime: seconds }),
   setIsExpanded: (expanded) => set({ isExpanded: expanded }),
   setPlaybackMode: (playbackMode) => set({ playbackMode }),
+  setShowPreviewModal: (show) => set({ showPreviewModal: show }),
 
   addFavorite: (song) => {
     const { favorites } = get();

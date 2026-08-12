@@ -51,6 +51,7 @@ export function FavoritesTrackList({ tracks, likedIds, onToggleLike }) {
             index={idx}
             isLiked={likedIds.has(track.id)}
             onToggleLike={onToggleLike}
+            queue={tracks}
           />
         ))}
       </div>

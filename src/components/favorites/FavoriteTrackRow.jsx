@@ -1,9 +1,9 @@
 import { Play, Pause, Heart } from "lucide-react";
 import { usePlayerStore } from "../../store/usePlayerStore";
 
-export function FavoriteTrackRow({ track, index, isLiked, onToggleLike }) {
+export function FavoriteTrackRow({ track, index, isLiked, onToggleLike, queue }) {
   const { currentSong, isPlaying, playSong, togglePlay, setIsExpanded } = usePlayerStore();
-  const isCurrent = currentSong?.title === track.title;
+  const isCurrent = currentSong?.id === track.id;
 
   const handlePlay = (e) => {
     e.stopPropagation();
@@ -11,11 +11,14 @@ export function FavoriteTrackRow({ track, index, isLiked, onToggleLike }) {
       togglePlay();
     } else {
       playSong({
+        id: track.id,
         title: track.title,
         artist: track.artist,
         imageUrl: track.image,
         duration: track.duration,
-      });
+        previewUrl: track.previewUrl,
+        spotifyUri: track.spotifyUri
+      }, queue ?? null);
     }
     if (window.innerWidth < 768) {
       setIsExpanded(true);

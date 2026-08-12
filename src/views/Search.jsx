@@ -112,12 +112,14 @@ export function Search() {
                   style={{ animationDelay: `${0.1 + index * 0.05}s` }}
                 >
                   <SongRow
+                    id={song.id}
                     title={song.title}
                     artist={song.artist}
                     duration={song.duration}
                     imageUrl={song.imageUrl}
                     previewUrl={song.previewUrl}
                     spotifyUri={song.spotifyUri}
+                    queue={tracks}
                   />
                 </div>
               ))}
