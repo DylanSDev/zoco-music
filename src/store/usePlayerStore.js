@@ -19,6 +19,23 @@ function saveToStorage(key, value) {
   } catch {}
 }
 
+export function parseDurationSeconds(song) {
+  if (!song) return 30;
+  if (song.durationMs && typeof song.durationMs === "number") {
+    return Math.floor(song.durationMs / 1000);
+  }
+  if (typeof song.duration === "number") {
+    return song.duration;
+  }
+  if (typeof song.duration === "string" && song.duration.includes(":")) {
+    const parts = song.duration.split(":");
+    const mins = parseInt(parts[0], 10) || 0;
+    const secs = parseInt(parts[1], 10) || 0;
+    return mins * 60 + secs;
+  }
+  return 30;
+}
+
 export const usePlayerStore = create((set, get) => ({
   currentSong: null,
   queue: [],
@@ -44,6 +61,7 @@ export const usePlayerStore = create((set, get) => ({
 
     const newQueue = queue ?? (get().queue.length > 0 ? get().queue : [song]);
     const newIndex = newQueue.findIndex((s) => s.id === song.id);
+    const dur = parseDurationSeconds(song);
 
     set({
       currentSong: song,
@@ -51,6 +69,7 @@ export const usePlayerStore = create((set, get) => ({
       queueIndex: newIndex >= 0 ? newIndex : 0,
       isPlaying: true,
       currentTime: 0,
+      duration: dur,
       seekTime: 0,
       history: newHistory
     });
@@ -65,7 +84,16 @@ export const usePlayerStore = create((set, get) => ({
     const filtered = history.filter((h) => h.id !== nextSong.id);
     const newHistory = [nextSong, ...filtered].slice(0, HISTORY_MAX);
     saveToStorage(LS_HISTORY, newHistory);
-    set({ currentSong: nextSong, queueIndex: nextIndex, isPlaying: true, currentTime: 0, seekTime: 0, history: newHistory });
+    const dur = parseDurationSeconds(nextSong);
+    set({
+      currentSong: nextSong,
+      queueIndex: nextIndex,
+      isPlaying: true,
+      currentTime: 0,
+      duration: dur,
+      seekTime: 0,
+      history: newHistory
+    });
   },
 
   playPrev: () => {
@@ -77,7 +105,15 @@ export const usePlayerStore = create((set, get) => ({
     }
     const prevIndex = queueIndex - 1 >= 0 ? queueIndex - 1 : queue.length - 1;
     const prevSong = queue[prevIndex];
-    set({ currentSong: prevSong, queueIndex: prevIndex, isPlaying: true, currentTime: 0, seekTime: 0 });
+    const dur = parseDurationSeconds(prevSong);
+    set({
+      currentSong: prevSong,
+      queueIndex: prevIndex,
+      isPlaying: true,
+      currentTime: 0,
+      duration: dur,
+      seekTime: 0
+    });
   },
 
   setQueue: (songs) => {

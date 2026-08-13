@@ -1,16 +1,12 @@
-import { Sparkles, LogOut } from "lucide-react";
+import { Sparkles, LogOut, User } from "lucide-react";
 
-export function ProfileHeader({ name, role, avatarUrl, onLogout }) {
+export function ProfileHeader({ name, role, onLogout }) {
   return (
     <div className="relative flex flex-col items-center justify-center pt-4 pb-6 text-center">
       <div className="relative flex items-center justify-center mb-4">
         <div className="absolute -inset-6 rounded-full bg-[#F1FF00]/25 blur-3xl animate-pulse" />
-        <div className="relative h-28 w-28 md:h-36 md:w-36 rounded-full border-2 border-[#F1FF00]/40 overflow-hidden shadow-[0_0_35px_rgba(241,255,0,0.35)] bg-[#0F2A3B]">
-          <img
-            src={avatarUrl}
-            alt={name}
-            className="h-full w-full object-cover"
-          />
+        <div className="relative h-28 w-28 md:h-36 md:w-36 rounded-full border-2 border-[#F1FF00]/40 flex items-center justify-center shadow-[0_0_35px_rgba(241,255,0,0.35)] bg-[#0F2A3B]">
+          <User className="h-12 w-12 md:h-16 md:w-16 text-[#F1FF00]/80" />
         </div>
       </div>
 

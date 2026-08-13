@@ -15,7 +15,6 @@ export function ProfileView() {
   };
 
   const name = userProfile?.display_name || "Usuario";
-  const avatarUrl = userProfile?.images?.[0]?.url || null;
   const spotifyStatus = isAuthenticated ? "connected" : "disconnected";
 
   return (
@@ -24,7 +23,6 @@ export function ProfileView() {
         <ProfileHeader
           name={name}
           role={isAuthenticated ? "Usuario Premium" : "Oyente"}
-          avatarUrl={avatarUrl}
           onLogout={handleLogout}
         />
 

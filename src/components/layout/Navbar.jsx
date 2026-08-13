@@ -10,7 +10,7 @@ export function Navbar({ placeholder = "Buscar artistas, canciones, podcasts..."
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  const { isAuthenticated, userProfile } = useSpotifyStore();
+  const { isAuthenticated } = useSpotifyStore();
 
   useEffect(() => {
     setQuery(searchParams.get("q") || "");
@@ -59,15 +59,7 @@ export function Navbar({ placeholder = "Buscar artistas, canciones, podcasts..."
             aria-label="Perfil de usuario"
             className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-[#F1FF00]/40 bg-[#0F2A3B]/60 text-[#F1FF00] backdrop-blur-md transition-all duration-300 hover:shadow-neon hover:scale-105 overflow-hidden"
           >
-            {isAuthenticated && userProfile?.images?.[0]?.url ? (
-              <img
-                src={userProfile.images[0].url}
-                alt={userProfile.display_name}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <User className="h-5 w-5" />
-            )}
+            <User className="h-5 w-5" />
           </button>
         </div>
       </nav>
