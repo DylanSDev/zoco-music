@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { QuickMixCard } from "../components/home/QuickMixCard";
 import { MusicCard } from "../components/home/MusicCard";
 import { SongRow } from "../components/home/SongRow";
@@ -20,6 +20,7 @@ export function Home() {
   const [activeChip, setActiveChip] = useState("Todos");
   const [isLoading, setIsLoading] = useState(true);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const vibeCache = useRef({});
 
   const vibes = [
     {
@@ -90,7 +91,12 @@ export function Home() {
       return;
     }
     setActiveVibe(genre);
+    if (vibeCache.current[genre]) {
+      setVibeTracks(vibeCache.current[genre]);
+      return;
+    }
     const tracks = await searchSpotifyTracks(genre, 8);
+    vibeCache.current[genre] = tracks;
     setVibeTracks(tracks);
   };
 
@@ -101,7 +107,13 @@ export function Home() {
       setVibeTracks([]);
       return;
     }
+    if (vibeCache.current[chip]) {
+      setVibeTracks(vibeCache.current[chip]);
+      setActiveVibe(chip);
+      return;
+    }
     const tracks = await searchSpotifyTracks(chip, 8);
+    vibeCache.current[chip] = tracks;
     setVibeTracks(tracks);
     setActiveVibe(chip);
   };

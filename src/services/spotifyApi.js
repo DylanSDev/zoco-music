@@ -4,6 +4,25 @@ const BASE_URL = "https://api.spotify.com/v1";
 const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID || "26d7e960ef024900b73ce0baeced10ac";
 const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET || "";
 
+const TTL_SHORT = 2 * 60 * 1000;
+const TTL_LONG = 10 * 60 * 1000;
+
+const requestCache = new Map();
+
+function getCached(key) {
+  const entry = requestCache.get(key);
+  if (!entry) return undefined;
+  if (Date.now() > entry.expiresAt) {
+    requestCache.delete(key);
+    return undefined;
+  }
+  return entry.value;
+}
+
+function setCache(key, value, ttl) {
+  requestCache.set(key, { value, expiresAt: Date.now() + ttl });
+}
+
 let appToken = null;
 let appTokenExpiry = 0;
 
@@ -36,14 +55,19 @@ async function getToken() {
   return getAppToken();
 }
 
-async function spotifyFetch(path) {
+async function spotifyFetch(path, ttl = TTL_SHORT) {
+  const cached = getCached(path);
+  if (cached !== undefined) return cached;
+
   const token = await getToken();
   if (!token) return null;
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   if (!response.ok) return null;
-  return response.json();
+  const data = await response.json();
+  setCache(path, data, ttl);
+  return data;
 }
 
 function formatDuration(ms) {
@@ -94,14 +118,15 @@ export async function getFeaturedPlaylists(limit = 6) {
 
 export async function getNewReleases(limit = 5) {
   const albumsData = await spotifyFetch(
-    `/browse/new-releases?${new URLSearchParams({ limit: limit.toString(), country: "US" })}`
+    `/browse/new-releases?${new URLSearchParams({ limit: limit.toString(), country: "US" })}`,
+    TTL_LONG
   );
   const albums = albumsData?.albums?.items ?? [];
   if (albums.length === 0) return [];
 
   const trackResults = await Promise.all(
     albums.map((al) =>
-      spotifyFetch(`/albums/${al.id}/tracks?limit=1&market=US`).then((res) => {
+      spotifyFetch(`/albums/${al.id}/tracks?limit=1&market=US`, TTL_LONG).then((res) => {
         const track = res?.items?.[0];
         if (!track) return null;
         return {
@@ -170,7 +195,7 @@ export async function searchSpotifyPlaylists(query, limit = 6) {
 }
 
 export async function getArtist(artistId) {
-  const artist = await spotifyFetch(`/artists/${artistId}`);
+  const artist = await spotifyFetch(`/artists/${artistId}`, TTL_LONG);
   if (!artist) return null;
   return {
     id: artist.id,
@@ -186,7 +211,7 @@ export async function getArtist(artistId) {
 }
 
 export async function getArtistTopTracks(artistId) {
-  const data = await spotifyFetch(`/artists/${artistId}/top-tracks?market=ES`);
+  const data = await spotifyFetch(`/artists/${artistId}/top-tracks?market=ES`, TTL_LONG);
   return (data?.tracks ?? []).map(mapTrack);
 }
 
@@ -196,7 +221,8 @@ export async function getArtistAlbums(artistId, limit = 6) {
       include_groups: "album,single",
       limit: limit.toString(),
       market: "ES"
-    })}`
+    })}`,
+    TTL_LONG
   );
   return (data?.items ?? []).map((al) => ({
     id: al.id,
@@ -208,7 +234,7 @@ export async function getArtistAlbums(artistId, limit = 6) {
 }
 
 export async function getAlbum(albumId) {
-  const album = await spotifyFetch(`/albums/${albumId}`);
+  const album = await spotifyFetch(`/albums/${albumId}`, TTL_LONG);
   if (!album) return null;
   return {
     id: album.id,
@@ -223,7 +249,7 @@ export async function getAlbum(albumId) {
 }
 
 export async function getAlbumTracks(albumId) {
-  const album = await spotifyFetch(`/albums/${albumId}`);
+  const album = await spotifyFetch(`/albums/${albumId}`, TTL_LONG);
   if (!album) return [];
   const artistName = album.artists?.map((a) => a.name).join(", ") ?? "";
   const coverImage = album.images?.[0]?.url ?? "";
@@ -245,7 +271,7 @@ export async function getAlbumTracks(albumId) {
 }
 
 export async function getPlaylist(playlistId) {
-  const pl = await spotifyFetch(`/playlists/${playlistId}`);
+  const pl = await spotifyFetch(`/playlists/${playlistId}`, TTL_LONG);
   if (!pl) return null;
 
   const tracks = (pl.tracks?.items ?? [])
@@ -271,7 +297,7 @@ export async function getUserSavedTracks(limit = 50) {
 }
 
 export async function getSpotifyTrack(trackId) {
-  const track = await spotifyFetch(`/tracks/${trackId}`);
+  const track = await spotifyFetch(`/tracks/${trackId}`, TTL_LONG);
   if (!track) return null;
   return mapTrack(track);
 }

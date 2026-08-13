@@ -3,11 +3,29 @@ import { usePlayerStore } from "../../store/usePlayerStore";
 import { useSpotifyStore } from "../../store/useSpotifyStore";
 import { PreviewDisabledModal } from "./PreviewDisabledModal";
 
+const audioCache = new Map();
+
+const CACHE_MAX = 10;
+
+function getCachedAudio(url) {
+  if (audioCache.has(url)) return audioCache.get(url);
+  if (audioCache.size >= CACHE_MAX) {
+    const oldestKey = audioCache.keys().next().value;
+    const oldAudio = audioCache.get(oldestKey);
+    oldAudio.pause();
+    oldAudio.src = "";
+    audioCache.delete(oldestKey);
+  }
+  const audio = new Audio(url);
+  audio.preload = "auto";
+  audioCache.set(url, audio);
+  return audio;
+}
+
 export function AudioEngine() {
   const audioRef = useRef(null);
   const playerRef = useRef(null);
-  const currentPreviewUrlRef = useRef("");
-  const resolvedUrlRef = useRef("");
+  const playPromiseRef = useRef(null);
   const [deviceId, setDeviceId] = useState(null);
 
   const {
@@ -17,24 +35,6 @@ export function AudioEngine() {
   } = usePlayerStore();
 
   const { accessToken, isPremium } = useSpotifyStore();
-
-  useEffect(() => {
-    if (!audioRef.current) audioRef.current = new Audio();
-    const audio = audioRef.current;
-
-    const handleTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-      if (audio.duration && !isNaN(audio.duration)) setDuration(audio.duration);
-    };
-    const handleEnded = () => { setIsPlaying(false); setCurrentTime(0); };
-
-    audio.addEventListener("timeupdate", handleTimeUpdate);
-    audio.addEventListener("ended", handleEnded);
-    return () => {
-      audio.removeEventListener("timeupdate", handleTimeUpdate);
-      audio.removeEventListener("ended", handleEnded);
-    };
-  }, [setCurrentTime, setDuration, setIsPlaying]);
 
   useEffect(() => {
     setPlaybackMode(isPremium && accessToken ? "sdk" : "preview");
@@ -80,14 +80,13 @@ export function AudioEngine() {
 
   useEffect(() => {
     if (isPremium && playerRef.current) return;
-
-    const audio = audioRef.current;
-    if (!audio || !currentSong) return;
+    if (!currentSong) return;
 
     const url = currentSong.previewUrl || "";
 
     if (!url) {
-      audio.pause();
+      const prev = audioRef.current;
+      if (prev) prev.pause();
       if (isPlaying) {
         setIsPlaying(false);
         setShowPreviewModal(true);
@@ -95,22 +94,50 @@ export function AudioEngine() {
       return;
     }
 
-    if (currentPreviewUrlRef.current !== url) {
-      currentPreviewUrlRef.current = url;
-      audio.src = url;
-      audio.currentTime = 0;
+    const audio = getCachedAudio(url);
+
+    if (audioRef.current && audioRef.current !== audio) {
+      audioRef.current.pause();
     }
+    audioRef.current = audio;
+
+    const handleTimeUpdate = () => {
+      setCurrentTime(audio.currentTime);
+      if (audio.duration && !isNaN(audio.duration)) setDuration(audio.duration);
+    };
+    const handleEnded = () => { setIsPlaying(false); setCurrentTime(0); };
+
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("ended", handleEnded);
 
     if (isPlaying) {
-      audio.play().catch((err) => {
-        console.error("Audio playback error", err);
-        setIsPlaying(false);
-        setShowPreviewModal(true);
-      });
+      if (playPromiseRef.current) {
+        playPromiseRef.current.then(() => {
+          audio.play().catch(() => {});
+        });
+      } else {
+        playPromiseRef.current = audio.play().catch((err) => {
+          console.error("Audio playback error", err);
+          setIsPlaying(false);
+          setShowPreviewModal(true);
+        });
+        playPromiseRef.current.finally(() => { playPromiseRef.current = null; });
+      }
     } else {
-      audio.pause();
+      if (playPromiseRef.current) {
+        playPromiseRef.current.then(() => {
+          audio.pause();
+        });
+      } else {
+        audio.pause();
+      }
     }
-  }, [currentSong?.previewUrl, currentSong?.id, isPlaying, isPremium, setIsPlaying, setShowPreviewModal]);
+
+    return () => {
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("ended", handleEnded);
+    };
+  }, [currentSong?.previewUrl, currentSong?.id, isPlaying, isPremium, setIsPlaying, setCurrentTime, setDuration, setShowPreviewModal]);
 
   useEffect(() => {
     const audio = audioRef.current;
