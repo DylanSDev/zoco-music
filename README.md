@@ -6,7 +6,7 @@
 [![Spotify API](https://img.shields.io/badge/Spotify_API-Integration-1DB954?logo=spotify&logoColor=white)](https://developer.spotify.com/documentation/web-api)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**ZOCO Music** es una aplicación web SPA (*Single Page Application*) inspirada en Spotify, desarrollada como parte de un desafío técnico de 48 horas. Está diseñada con una estética visual **Glassmorphism**, experiencia de usuario altamente fluida y navegación sin recargas de página.
+**ZOCO Music** es una aplicación web SPA (*Single Page Application*) inspirada en Spotify, desarrollada como parte de un desafío técnico de 48 horas. Está diseñada con una estética visual **Glassmorphism**, experiencia de usuario altamente fluida y navegación sin recargas de página.
 
 ---
 
@@ -88,7 +88,19 @@ zoco-music/
 ### Prerrequisitos
 * Node.js versión **18.0.0** o superior.
 * Gestor de paquetes `npm` o `yarn`.
-* Credenciales de Desarrollador en [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+
+### Obtención de credenciales de Spotify (Premium, app y URI)
+1. **Cuenta Premium:** Necesaria para usar el SDK de Spotify y para que el usuario pueda reproducir pistas completas al loggearse.
+2. **Crear aplicación:** En [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) crea una nueva aplicación. Configura nombre y descripción.
+3. **Configurar Redirect URI:** Añade una URI de redirección que apunte a tu IP pública, por ejemplo `http://<TU_IP_PUBLICA>:5173/callback`. No uses `localhost` porque spotify bloquea la comunicación al considerarla No segura. 
+4. **Selecciona Web API y Web Playback SDK**. 
+5. Guarda la aplicación y copia el **Client ID** y **Client Secret**.
+6. **Variables de entorno:** Agrega al archivo `.env`:
+```env
+VITE_SPOTIFY_CLIENT_ID=tu_client_id_aqui
+VITE_SPOTIFY_CLIENT_SECRET=tu_client_secret_aqui
+```
+Reinicia el servidor después de modificar el .env.
 
 ### Pasos de Instalación
 
@@ -132,6 +144,7 @@ zoco-music/
 * **Bot de Recomendaciones n8n:** Integración de un asistente virtual vía Webhook conectado a un flujo de automatización en n8n para sugerir playlists y canciones personalizadas según el estado de ánimo o género seleccionado.
 
 ---
+**Nota:** La integración con n8n aún no está disponible. Se podrá habilitar en el futuro añadiendo la URL del webhook en el archivo `.env`.
 
 ## 💬 Deuda Técnica y Oportunidades de Mejora
 
